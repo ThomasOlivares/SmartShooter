@@ -1,0 +1,18 @@
+
+Thomas Olivares, Kilian Vettori
+Smart Shooter
+The target of this project is to observe the behaviour of neural networks in a simple environment and to optimize their
+unsupervised learning algorithms so they perform better. The goal is to test different learning algorithms and to gradually make the 
+environment for the neural networks more complex. The different networks compete in an arenalike situation, where they can establish
+different techniques to win vs the other network.
+
+The environment: In the beginning the networks can only move on the y-axis. They have the ability to shoot at the other network,
+and have to constantly heal themselves by moving to distinguished places because they gradually lose health. The picture below depicts the first stage of the environment.
+
+-->picture
+
+As soon as the networks behave well in this simple environment, the arena can become more complex. Possible directions would be 2-dimensional
+movement with obstacles or multiple networks in one environment.
+
+Right now we plan on using the OpenNN neural network library and programming in c++, but are very open to suggestions how to improve our project. We would be pleased to get the chance to learn more about neural networks and unsupervised learning by completing this project. 
+Also we would really appreciate the help and advise of a supervisor to get a better insight in the expanding world of machine learning and to get our networks to be unbeatable players. 
