@@ -1,5 +1,9 @@
 #pragma once
 
+#define healthValue 20
+#define leftColumn 100
+#define rightColumn 500
+
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>

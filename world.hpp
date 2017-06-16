@@ -1,6 +1,9 @@
 #pragma once
 
 #include "character.hpp"
+#include "pickup.hpp"
+
+#include <map>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -10,12 +13,26 @@
 
 class World : public sf::Drawable
 {
+	public :
+		enum Texture{
+			Player, 
+			Health, 
+			TextureCount
+		};
+
 	public : 
 						World();
+		void 			initPlayers();
+		void 			initTextures();
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		void 			update(sf::Time dt, sf::Vector2f dir);
-		void 			checkPlayerOutWindow();
+		void 			checkPlayerOutWindow(Character& player);
+		void 			collectPickups();
+		void			destroyEntities();
+		void 			addPickups(int max);
 
 	private :
-		Character 		mPlayer;
+		std::map<Texture, sf::Texture>			textures;
+		std::vector<Character> 					players;
+		std::vector<Pickup> 					pickups;
 };

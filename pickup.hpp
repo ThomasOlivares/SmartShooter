@@ -7,19 +7,20 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 
-class Character : public sf::Transformable, public sf::Drawable
+class Pickup : public sf::Transformable, public sf::Drawable
 {
 	public :
-						Character(int posX, int posY, sf::Texture& texture);
+						Pickup(int posX, int posY, sf::Texture& texture);
 		void 			initSprite(sf::Texture& texture);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		void 			update(sf::Time dt, sf::Vector2f dir);
-		void 			addHealth(int value);
+		void 			destroy();
+		bool 			isDestroyed();
+		int 			getHealth();
 		sf::FloatRect 	getBoundingRect() const;
 		
 	private :
+		bool 			destroyed;
 		int 			health;
-		float 			speed;
 		sf::Sprite 		mSprite;
 		sf::Texture 	texture;
 };

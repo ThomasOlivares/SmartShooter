@@ -5,6 +5,7 @@ FLAG=-lsfml-graphics \
 CLASSES=application.o \
 		character.o \
 		main.o \
+		pickup.o \
 		utility.o \
 		world.o
 
@@ -27,6 +28,9 @@ character.o : character.cpp
 
 main.o : main.cpp
 	$(COMPILER) $(LDFLAGS) -c main.cpp $(RDFLAGS)
+
+pickup.o : pickup.cpp
+	$(COMPILER) $(LDFLAGS) -c pickup.cpp $(RDFLAGS)
 
 utility.o : utility.cpp
 	$(COMPILER) $(LDFLAGS) -c utility.cpp $(RDFLAGS)

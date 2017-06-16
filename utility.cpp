@@ -26,7 +26,7 @@ void centerOrigin(sf::Text& text)
 }
 
 sf::Vector2i getWindowDimensions(){
-	return sf::Vector2i(400, 400);
+	return sf::Vector2i(600, 600);
 }
 
 float length(sf::Vector2f vector)
