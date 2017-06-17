@@ -22,5 +22,4 @@ class Pickup : public sf::Transformable, public sf::Drawable
 		bool 			destroyed;
 		int 			health;
 		sf::Sprite 		mSprite;
-		sf::Texture 	texture;
 };

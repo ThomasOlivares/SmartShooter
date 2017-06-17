@@ -7,21 +7,23 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 
-class Character : public sf::Transformable, public sf::Drawable
+class Bullet : public sf::Transformable, public sf::Drawable
 {
 	public :
-						Character(int posX, int posY, sf::Texture& texture);
+						Bullet(int posX, int posY, sf::Texture& texture);
 		void 			initSprite(sf::Texture& texture);
-		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		void 			setDirection(sf::Vector2f direction_);
 		void 			update(sf::Time dt);
-		void 			addHealth(int value);
+		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void 			destroy();
+		bool 			isDestroyed();
+		void 			setSpeed(sf::Vector2f speed_);
+		int 			getDammages();
 		sf::FloatRect 	getBoundingRect() const;
 		
 	private :
-		int 			health;
-		float 			speed;
+		int 			dammages;
+		int 			absoluteSpeed;
+		sf::Vector2f 	speed;
+		bool 			destroyed;
 		sf::Sprite 		mSprite;
-		sf::Texture 	texture;
-		sf::Vector2f 	direction;
 };

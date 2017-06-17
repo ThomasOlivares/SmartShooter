@@ -3,6 +3,7 @@ FLAG=-lsfml-graphics \
 	 -lsfml-system
 
 CLASSES=application.o \
+		bullet.o \
 		character.o \
 		main.o \
 		pickup.o \
@@ -22,6 +23,9 @@ main : $(CLASSES)
 
 application.o : application.cpp
 	$(COMPILER) $(LDFLAGS) -c application.cpp $(RDFLAGS)
+
+bullet.o : bullet.cpp
+	$(COMPILER) $(LDFLAGS) -c bullet.cpp $(RDFLAGS)
 
 character.o : character.cpp
 	$(COMPILER) $(LDFLAGS) -c character.cpp $(RDFLAGS)

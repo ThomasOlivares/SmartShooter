@@ -1,8 +1,18 @@
 #pragma once
 
-#define healthValue 20
-#define leftColumn 100
-#define rightColumn 500
+// Pickups
+#define healthCharacter 100
+#define healthValue 	20
+#define maxPickup 		5
+
+// Bullets
+#define bulletDammages 	30
+#define bulletSpeed 	1000
+
+//Characters
+#define leftColumn 		100  // Positions of the two character and pickups associated
+#define rightColumn 	500
+#define speedCharacter 	500
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/CircleShape.hpp>

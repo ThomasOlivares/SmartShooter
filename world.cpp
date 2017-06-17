@@ -4,6 +4,13 @@
 #include <iostream>
 #include <time.h>
 
+/*TODO : 
+- bullet collision
+- bullet destroy after going out of window
+- health printing
+- end of the game (victory/defeat)
+*/
+
 World::World()
 : textures()
 {
@@ -13,35 +20,67 @@ World::World()
 }
 
 void World::initPlayers(){
-	players.push_back(Character(leftColumn, getWindowDimensions().y/2, textures[Player]));
-	players.push_back(Character(rightColumn, getWindowDimensions().y/2, textures[Player]));
+	players.push_back(Character(leftColumn, getWindowDimensions().y/2, 
+		textures[PlayerT]));
+	players.push_back(Character(rightColumn, getWindowDimensions().y/2, 
+		textures[PlayerT]));
 }
 
 void World::initTextures(){
-	sf::Texture texture;
-	if (!texture.loadFromFile("Media/character.png"))
-	{
-    	std::cout << "error while loading the texture" << std::endl;
-    	exit(EXIT_FAILURE);
-	}
-	textures.insert(std::pair<Texture, sf::Texture>(Player, texture));
-
-	if (!texture.loadFromFile("Media/health.png"))
-	{
-    	std::cout << "error while loading the texture" << std::endl;
-    	exit(EXIT_FAILURE);
-	}
-	textures.insert(std::pair<Texture, sf::Texture>(Health, texture));
+	load(PlayerT, "Media/character.png");
+	load(PickupT, "Media/health.png");
+	load(BulletT, "Media/bullet.png");
 }
 
-void World::update(sf::Time dt, sf::Vector2f dir){
+void World::load(Texture name, char* pathname){
+	sf::Texture texture;
+	if (!texture.loadFromFile(pathname))
+	{
+    	std::cout << "error while loading textures" << std::endl;
+    	exit(EXIT_FAILURE);
+	}
+	textures.insert(std::pair<Texture, sf::Texture>(name, texture));
+}
+
+void World::handleEvent(sf::Event& event){
+	// Player1
+    sf::Vector2f direction = sf::Vector2f(0, 0);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)){
+        direction += sf::Vector2f(0, -1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+        direction += sf::Vector2f(0, 1);
+    }
+    players[0].setDirection(direction);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+        createBullet(players[0], textures[BulletT], 1);
+    }
+
+	// Player2
+	direction = sf::Vector2f(0, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
+        direction += sf::Vector2f(0, -1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
+        direction += sf::Vector2f(0, 1);
+    }
+    players[1].setDirection(direction);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
+        createBullet(players[1], textures[BulletT], -1);
+    }
+}
+
+void World::update(sf::Time dt){
 	for (auto itr = players.begin(); itr != players.end(); itr++){
-		itr->update(dt, dir);
+		itr->update(dt);
 		checkPlayerOutWindow(*itr);
+	}
+	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+		itr->update(dt);
 	}
 	collectPickups();
 	destroyEntities();
-	addPickups(5);
+	addPickups(maxPickup);
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
@@ -51,6 +90,18 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
 		itr->draw(target, states);
 	}
+	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+		itr->draw(target, states);
+	}
+}
+
+void World::createBullet(Character player, sf::Texture& texture, int direction){
+	sf::FloatRect rect = player.getBoundingRect();
+	float x = rect.left + rect.width/2;
+	float y = rect.top + rect.height/2;
+	Bullet bullet = Bullet(x, y, texture);
+	bullet.setSpeed(sf::Vector2f(direction, 0));
+	bullets.push_back(bullet);
 }
 
 /* If the player wants to go outside the window, we keep it inside
@@ -107,12 +158,12 @@ void World::addPickups(int max){
 	}
 	while (countLeft < max){
 		int posY = rand()%getWindowDimensions().y;
-		pickups.push_back(Pickup(leftColumn, posY, textures[Health]));
+		pickups.push_back(Pickup(leftColumn, posY, textures[PickupT]));
 		countLeft++;
 	}
 	while (countRight < max){
 		int posY = rand()%getWindowDimensions().y;
-		pickups.push_back(Pickup(rightColumn, posY, textures[Health]));
+		pickups.push_back(Pickup(rightColumn, posY, textures[PickupT]));
 		countRight++;
 	}
 }

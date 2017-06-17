@@ -27,21 +27,15 @@ void Application::handleEvent(){
         if (event.type == sf::Event::Closed){
             mWindow.close();
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-        	direction = sf::Vector2f(0, -1);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-        	direction = sf::Vector2f(0, 1);
-        }
         else{
-        	direction = sf::Vector2f(0, 0);
+        	mWorld.handleEvent(event);
         }
     }
 }
 
 void Application::update(sf::Time dt)
 {
-	mWorld.update(dt, direction);
+	mWorld.update(dt);
 }
 
 void Application::render()
