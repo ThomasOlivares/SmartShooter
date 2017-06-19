@@ -33,9 +33,9 @@ void Application::handleEvent(){
     }
 }
 
-void Application::update(sf::Time dt)
+int Application::update(sf::Time dt)
 {
-	mWorld.update(dt);
+	return mWorld.update(dt);
 }
 
 void Application::render()
@@ -52,7 +52,9 @@ void Application::run()
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-	while (mWindow.isOpen())
+	int finalScore = 0;
+
+	while (mWindow.isOpen() && finalScore == 0)
 	{
 		sf::Time dt = clock.restart();
 		timeSinceLastUpdate += dt;
@@ -61,8 +63,15 @@ void Application::run()
 			timeSinceLastUpdate -= TimePerFrame;
 
 			handleEvent();
-			update(TimePerFrame);
+			finalScore = update(TimePerFrame);
 		}
 		render();
+	}
+
+	if (finalScore > 0){
+		std::cout << "left won with " << finalScore << " health" << std::endl;
+	}
+	else{
+		std::cout << "right won with " << -finalScore << " health" << std::endl;
 	}
 }

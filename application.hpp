@@ -15,7 +15,7 @@ class Application
 
 	private:
 		void 					handleEvent();
-		void					update(sf::Time dt);
+		int					update(sf::Time dt);
 		void					render();
 
 

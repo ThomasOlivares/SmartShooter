@@ -34,11 +34,13 @@ class World : public sf::Drawable
 		void 			createBullet(Character player, sf::Texture& texture, 
 			int direction);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		void 			update(sf::Time dt);
+		int 			update(sf::Time dt);
 		void 			checkPlayerOutWindow(Character& player);
 		void 			collectPickups();
+		void 			collisionDetection();
 		void			destroyEntities();
 		void 			addPickups(int max);
+		int 			checkGameOver();
 
 	private :
 		std::map<Texture, sf::Texture>			textures;

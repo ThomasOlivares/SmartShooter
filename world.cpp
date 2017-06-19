@@ -4,18 +4,12 @@
 #include <iostream>
 #include <time.h>
 
-/*TODO : 
-- bullet collision
-- bullet destroy after going out of window
-- health printing
-- end of the game (victory/defeat)
-*/
-
 World::World()
 : textures()
 {
 	srand(time(NULL)); //initialize the random values
 	initTextures();
+	initFonts();
 	initPlayers();
 }
 
@@ -79,7 +73,7 @@ void World::handleEvent(sf::Event& event){
     }
 }
 
-void World::update(sf::Time dt){
+int World::update(sf::Time dt){
 	for (auto itr = players.begin(); itr != players.end(); itr++){
 		itr->update(dt);
 		checkPlayerOutWindow(*itr);
@@ -88,8 +82,12 @@ void World::update(sf::Time dt){
 		itr->update(dt);
 	}
 	collectPickups();
+	collisionDetection();
 	destroyEntities();
 	addPickups(maxPickup);
+	if (checkGameOver() != 0){
+		return checkGameOver();
+	}
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
@@ -141,11 +139,35 @@ void World::collectPickups(){
 	}
 }
 
+void World::collisionDetection(){
+	for (auto player = players.begin(); player != players.end(); player++){
+		sf::FloatRect rect = player->getBoundingRect();
+		for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+			sf::FloatRect bulletRect = itr->getBoundingRect();
+			if (rect.intersects(bulletRect)){
+				player->takeDammages(itr->getDammages());
+				itr->destroy();
+			}
+		}
+	}
+}
+
 // Destroy the entities marked to be destroyed
 void World::destroyEntities(){
 	for (auto itr = pickups.begin(); itr != pickups.end();){
 		if (itr->isDestroyed()){
 			itr = pickups.erase(itr);
+		}
+		else{
+			itr++;
+		}
+	}
+	for (auto itr = bullets.begin(); itr != bullets.end();){
+		if (itr->isDestroyed()){
+			itr = bullets.erase(itr);
+		}
+		else if (itr->getPosition().x < 0 || itr->getPosition().x > getWindowDimensions().x){
+			itr = bullets.erase(itr);
 		}
 		else{
 			itr++;
@@ -175,4 +197,16 @@ void World::addPickups(int max){
 		pickups.push_back(Pickup(rightColumn, posY, textures[PickupT]));
 		countRight++;
 	}
+}
+
+/* return a number corresponding to the health of the winner
+positive value means left player won, negative means right player won*/
+int World::checkGameOver(){
+	if (players[0].getHealth() <= 0){
+		return -players[1].getHealth();
+	}
+	else if (players[1].getHealth() <= 0){
+		return players[0].getHealth();
+	}
+	return 0;
 }

@@ -4,43 +4,58 @@
 #include <string>
 #include <iostream>
 
-Character::Character(int posX, int posY, sf::Texture& texture, sf::Font& font)
+Character::Character(int posX, int posY, sf::Texture& texture, const sf::Font& font)
 : mSprite()
 , speed(speedCharacter)
 , health(healthCharacter)
 , direction(sf::Vector2f(0, 0))
-, healthDisplay(font, std::to_string(health))
+, healthDisplay()
 {
 	setPosition(posX, posY);
 	initSprite(texture);
+	initText(font);
 	centerOrigin(mSprite);
-	healthDisplay.setPosition(0, 20); //We set the text just below the character
 }
 
 void Character::initSprite(sf::Texture& texture){
-	if (!texture.loadFromFile("Media/character.png"))
-	{
-    	std::cout << "error while loading the texture" << std::endl;
-    	exit(EXIT_FAILURE);
-	}
 	mSprite.setTexture(texture);
+}
+
+void Character::initText(const sf::Font& font){
+	healthDisplay.setFont(font);
+	healthDisplay.setString(std::to_string(health));
+	healthDisplay.setCharacterSize(15);
+	healthDisplay.setPosition(0, 20); // We set the text just below the character
+	healthDisplay.setStyle(sf::Text::Bold);
+	healthDisplay.setColor(sf::Color::Red);
+
+	centerOrigin(healthDisplay);
 }
 
 void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	target.draw(mSprite, getTransform());
-	healthDisplay.draw(target, getTransform());
+	target.draw(healthDisplay, getTransform());
 }
 
 void Character::update(sf::Time dt){
 	move(direction*speed*dt.asSeconds());
+	healthDisplay.setString(std::to_string(health));
 }
 
 void Character::setDirection(sf::Vector2f direction_){
 	direction = direction_;
 }
 
+int Character::getHealth(){
+	return health;
+}
+
 void Character::addHealth(int value){
 	health += value;
+}
+
+void Character::takeDammages(int value){
+	health -= value;
 }
 
 sf::FloatRect Character::getBoundingRect() const{
