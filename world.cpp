@@ -21,15 +21,24 @@ World::World()
 
 void World::initPlayers(){
 	players.push_back(Character(leftColumn, getWindowDimensions().y/2, 
-		textures[PlayerT]));
+		textures[PlayerT], mFont));
 	players.push_back(Character(rightColumn, getWindowDimensions().y/2, 
-		textures[PlayerT]));
+		textures[PlayerT], mFont));
 }
 
 void World::initTextures(){
 	load(PlayerT, "Media/character.png");
 	load(PickupT, "Media/health.png");
 	load(BulletT, "Media/bullet.png");
+}
+
+void World::initFonts(){
+	// Load it from a file
+	if (!mFont.loadFromFile("Media/Sansation.ttf"))
+	{
+    	printf("Error while loading font\n");
+    	exit(EXIT_FAILURE);
+	}
 }
 
 void World::load(Texture name, char* pathname){

@@ -11,6 +11,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
 
 class World : public sf::Drawable
@@ -27,6 +28,7 @@ class World : public sf::Drawable
 						World();
 		void 			initPlayers();
 		void 			initTextures();
+		void 			initFonts();
 		void 			load(Texture name, char* pathname);
 		void 			handleEvent(sf::Event& event);
 		void 			createBullet(Character player, sf::Texture& texture, 
@@ -40,6 +42,7 @@ class World : public sf::Drawable
 
 	private :
 		std::map<Texture, sf::Texture>			textures;
+		sf::Font 								mFont;
 		std::vector<Character> 					players;
 		std::vector<Pickup> 					pickups;
 		std::vector<Bullet> 					bullets;

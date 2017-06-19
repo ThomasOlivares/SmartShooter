@@ -1,17 +1,20 @@
 #include "character.hpp"
 #include "utility.hpp"
 
+#include <string>
 #include <iostream>
 
-Character::Character(int posX, int posY, sf::Texture& texture)
+Character::Character(int posX, int posY, sf::Texture& texture, sf::Font& font)
 : mSprite()
 , speed(speedCharacter)
 , health(healthCharacter)
 , direction(sf::Vector2f(0, 0))
+, healthDisplay(font, std::to_string(health))
 {
 	setPosition(posX, posY);
 	initSprite(texture);
 	centerOrigin(mSprite);
+	healthDisplay.setPosition(0, 20); //We set the text just below the character
 }
 
 void Character::initSprite(sf::Texture& texture){
@@ -25,6 +28,7 @@ void Character::initSprite(sf::Texture& texture){
 
 void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	target.draw(mSprite, getTransform());
+	healthDisplay.draw(target, getTransform());
 }
 
 void Character::update(sf::Time dt){

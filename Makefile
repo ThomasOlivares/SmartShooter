@@ -8,6 +8,7 @@ CLASSES=application.o \
 		main.o \
 		pickup.o \
 		utility.o \
+		textNode.o \
 		world.o
 
 COMPILER=g++
@@ -38,6 +39,9 @@ pickup.o : pickup.cpp
 
 utility.o : utility.cpp
 	$(COMPILER) $(LDFLAGS) -c utility.cpp $(RDFLAGS)
+
+textNode.o : textNode.cpp
+	$(COMPILER) $(LDFLAGS) -c textNode.cpp $(RDFLAGS)
 
 world.o : world.cpp
 	$(COMPILER) $(LDFLAGS) -c world.cpp $(RDFLAGS)
