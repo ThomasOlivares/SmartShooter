@@ -10,6 +10,8 @@ Character::Character(int posX, int posY, sf::Texture& texture, const sf::Font& f
 , health(healthCharacter)
 , direction(sf::Vector2f(0, 0))
 , healthDisplay()
+, cooldown(sf::seconds(0))
+, fireRate(sf::seconds(bulletPerSeconds))
 {
 	setPosition(posX, posY);
 	initSprite(texture);
@@ -40,6 +42,15 @@ void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 void Character::update(sf::Time dt){
 	move(direction*speed*dt.asSeconds());
 	healthDisplay.setString(std::to_string(health));
+	cooldown += dt;
+}
+
+bool Character::canShoot(){
+	if(cooldown > fireRate){
+		cooldown = sf::seconds(0);
+		return true;
+	}
+	return false;
 }
 
 void Character::setDirection(sf::Vector2f direction_){

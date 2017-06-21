@@ -8,6 +8,7 @@
 // Bullets
 #define bulletDammages 	30
 #define bulletSpeed 	1000
+#define bulletPerSeconds 0.2
 
 //Characters
 #define leftColumn 		100  // Positions of the two character and pickups associated

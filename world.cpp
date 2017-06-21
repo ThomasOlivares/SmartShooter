@@ -102,13 +102,15 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	}
 }
 
-void World::createBullet(Character player, sf::Texture& texture, int direction){
-	sf::FloatRect rect = player.getBoundingRect();
-	float x = rect.left + rect.width/2;
-	float y = rect.top + rect.height/2;
-	Bullet bullet = Bullet(x, y, texture);
-	bullet.setSpeed(sf::Vector2f(direction, 0));
-	bullets.push_back(bullet);
+void World::createBullet(Character& player, sf::Texture& texture, int direction){
+	if (player.canShoot()){
+		sf::FloatRect rect = player.getBoundingRect();
+		float x = rect.left + rect.width/2;
+		float y = rect.top + rect.height/2;
+		Bullet bullet = Bullet(x, y, texture);
+		bullet.setSpeed(sf::Vector2f(direction, 0));
+		bullets.push_back(bullet);
+	}
 }
 
 /* If the player wants to go outside the window, we keep it inside

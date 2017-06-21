@@ -21,6 +21,7 @@ class Character : public sf::Transformable, public sf::Drawable
 		void 			update(sf::Time dt);
 		void 			addHealth(int value);
 		void 			takeDammages(int value);
+		bool 			canShoot();
 		sf::FloatRect 	getBoundingRect() const;
 		
 	private :
@@ -31,4 +32,6 @@ class Character : public sf::Transformable, public sf::Drawable
 		sf::Vector2f 	direction;
 		sf::Text  		healthDisplay;
 		sf::Font 		mFont;
+		sf::Time 		cooldown;
+		const sf::Time 	fireRate;
 };

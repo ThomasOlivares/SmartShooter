@@ -31,7 +31,7 @@ class World : public sf::Drawable
 		void 			initFonts();
 		void 			load(Texture name, char* pathname);
 		void 			handleEvent(sf::Event& event);
-		void 			createBullet(Character player, sf::Texture& texture, 
+		void 			createBullet(Character& player, sf::Texture& texture, 
 			int direction);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		int 			update(sf::Time dt);

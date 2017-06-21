@@ -14,7 +14,7 @@ COMPILER=g++
 
 LDFLAGS=-g
 
-RDFLAGS=-std=c++14
+RDFLAGS=-std=c++11
 
 all : main
 
