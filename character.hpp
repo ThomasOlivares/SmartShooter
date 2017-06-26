@@ -12,7 +12,8 @@
 class Character : public sf::Transformable, public sf::Drawable
 {
 	public :
-						Character(int posX, int posY, sf::Texture& texture, const sf::Font& font);
+						Character(unsigned int id_, int posX, int posY, 
+							sf::Texture& texture, const sf::Font& font);
 		void 			initSprite(sf::Texture& texture);
 		void 			initText(const sf::Font& font);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -23,8 +24,10 @@ class Character : public sf::Transformable, public sf::Drawable
 		void 			takeDammages(int value);
 		bool 			canShoot();
 		sf::FloatRect 	getBoundingRect() const;
+		unsigned int 	getId() const;
 		
 	private :
+		unsigned int 	id;
 		int 			health;
 		float 			speed;
 		sf::Sprite 		mSprite;

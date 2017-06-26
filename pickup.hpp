@@ -10,15 +10,18 @@
 class Pickup : public sf::Transformable, public sf::Drawable
 {
 	public :
-						Pickup(int posX, int posY, sf::Texture& texture);
+						Pickup(unsigned int id_, int posX, int posY, 
+							sf::Texture& texture);
 		void 			initSprite(sf::Texture& texture);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		void 			destroy();
 		bool 			isDestroyed();
 		int 			getHealth();
 		sf::FloatRect 	getBoundingRect() const;
+		unsigned int 	getId() const;
 		
 	private :
+		unsigned int 	id;
 		bool 			destroyed;
 		int 			health;
 		sf::Sprite 		mSprite;

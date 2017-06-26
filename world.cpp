@@ -14,9 +14,9 @@ World::World()
 }
 
 void World::initPlayers(){
-	players.push_back(Character(leftColumn, getWindowDimensions().y/2, 
+	players.push_back(Character(0, leftColumn, getWindowDimensions().y/2, 
 		textures[PlayerT], mFont));
-	players.push_back(Character(rightColumn, getWindowDimensions().y/2, 
+	players.push_back(Character(1, rightColumn, getWindowDimensions().y/2, 
 		textures[PlayerT], mFont));
 }
 
@@ -73,7 +73,24 @@ void World::handleEvent(sf::Event& event){
     }
 }
 
-int World::update(sf::Time dt){
+void World::handleEvent(std::vector<double> decision1, std::vector<double> decision2){
+	// Player1
+    players[0].setDirection(sf::Vector2f(0, decision1[0]));
+    // We shoot with the probability decision[1]
+    double shoot = (double)(rand()%10000)/10000.f;
+    if (shoot < decision1[1]){
+    	createBullet(players[0], textures[BulletT], 1);
+    }
+
+    // Player2
+    players[1].setDirection(sf::Vector2f(0, decision2[0]));
+    shoot = (double)(rand()%10000)/10000.f;
+    if (shoot < decision2[1]){
+    	createBullet(players[1], textures[BulletT], -1);
+    }
+}
+
+std::pair<double, double> World::update(sf::Time dt){
 	for (auto itr = players.begin(); itr != players.end(); itr++){
 		itr->update(dt);
 		checkPlayerOutWindow(*itr);
@@ -85,8 +102,10 @@ int World::update(sf::Time dt){
 	collisionDetection();
 	destroyEntities();
 	addPickups(maxPickup);
-	if (checkGameOver() != 0){
-		return checkGameOver();
+
+	double finalScore = checkGameOver();
+	if (finalScore != 0){
+		return std::pair<double, double>(finalScore, -finalScore);
 	}
 }
 
@@ -107,7 +126,7 @@ void World::createBullet(Character& player, sf::Texture& texture, int direction)
 		sf::FloatRect rect = player.getBoundingRect();
 		float x = rect.left + rect.width/2;
 		float y = rect.top + rect.height/2;
-		Bullet bullet = Bullet(x, y, texture);
+		Bullet bullet = Bullet(player.getId(), x, y, texture);
 		bullet.setSpeed(sf::Vector2f(direction, 0));
 		bullets.push_back(bullet);
 	}
@@ -191,12 +210,12 @@ void World::addPickups(int max){
 	}
 	while (countLeft < max){
 		int posY = rand()%getWindowDimensions().y;
-		pickups.push_back(Pickup(leftColumn, posY, textures[PickupT]));
+		pickups.push_back(Pickup(0, leftColumn, posY, textures[PickupT]));
 		countLeft++;
 	}
 	while (countRight < max){
 		int posY = rand()%getWindowDimensions().y;
-		pickups.push_back(Pickup(rightColumn, posY, textures[PickupT]));
+		pickups.push_back(Pickup(1, rightColumn, posY, textures[PickupT]));
 		countRight++;
 	}
 }
@@ -211,4 +230,56 @@ int World::checkGameOver(){
 		return players[0].getHealth();
 	}
 	return 0;
+}
+
+// return the values which we will give to the left neural network
+std::vector<double> World::getImputs1(){
+	std::vector<double> result;
+	double dimX = getWindowDimensions().y;
+	double dimY = getWindowDimensions().y;
+
+	// We transform the players positions into a value beetween -1 and 1
+	result.push_back((2*players[0].getPosition().y - dimY)/dimY);
+	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
+
+	// Same for pickup
+	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
+		if (itr->getId() == 0){
+			result.push_back((2*itr->getPosition().y - dimY)/dimY);
+		}
+	}
+
+	// Same for bullet
+	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+		if (itr->getId() == 1){
+			result.push_back((2*itr->getPosition().y - dimY)/dimY);
+			result.push_back((2*itr->getPosition().x - dimX)/dimX);
+		}
+	}
+}
+
+// return the values which we will give to the right neural network
+std::vector<double> World::getImputs2(){
+	std::vector<double> result;
+	double dimX = getWindowDimensions().y;
+	double dimY = getWindowDimensions().y;
+
+	// We transform the players positions into a value beetween -1 and 1
+	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
+	result.push_back((2*players[0].getPosition().y - dimY)/dimY);
+
+	// Same for pickup
+	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
+		if (itr->getId() == 1){
+			result.push_back((2*itr->getPosition().y - dimY)/dimY);
+		}
+	}
+
+	// Same for bullet
+	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+		if (itr->getId() == 0){
+			result.push_back((2*itr->getPosition().y - dimY)/dimY);
+			result.push_back((2*itr->getPosition().x - dimX)/dimX);
+		}
+	}
 }

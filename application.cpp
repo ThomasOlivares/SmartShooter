@@ -35,7 +35,7 @@ void Application::handleEvent(){
 
 int Application::update(sf::Time dt)
 {
-	return mWorld.update(dt);
+	return (int)mWorld.update(dt).first;
 }
 
 void Application::render()

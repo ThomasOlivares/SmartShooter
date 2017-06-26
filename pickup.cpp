@@ -3,8 +3,9 @@
 
 #include <iostream>
 
-Pickup::Pickup(int posX, int posY, sf::Texture& texture)
-: mSprite()
+Pickup::Pickup(unsigned int id_, int posX, int posY, sf::Texture& texture)
+: id(id_)
+, mSprite()
 , destroyed(false)
 , health(healthValue)
 {
@@ -35,4 +36,8 @@ int Pickup::getHealth(){
 
 sf::FloatRect Pickup::getBoundingRect() const{
 	return getTransform().transformRect(mSprite.getGlobalBounds());
+}
+
+unsigned int Pickup::getId() const{
+	return id;
 }

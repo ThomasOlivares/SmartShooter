@@ -31,16 +31,20 @@ class World : public sf::Drawable
 		void 			initFonts();
 		void 			load(Texture name, char* pathname);
 		void 			handleEvent(sf::Event& event);
+		void 			handleEvent(std::vector<double> decision1, 
+							std::vector<double> decision2);
 		void 			createBullet(Character& player, sf::Texture& texture, 
-			int direction);
+							int direction);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		int 			update(sf::Time dt);
+		std::pair<double, double> 			update(sf::Time dt);
 		void 			checkPlayerOutWindow(Character& player);
 		void 			collectPickups();
 		void 			collisionDetection();
 		void			destroyEntities();
 		void 			addPickups(int max);
 		int 			checkGameOver();
+		std::vector<double> getImputs1();
+		std::vector<double> getImputs2();
 
 	private :
 		std::map<Texture, sf::Texture>			textures;

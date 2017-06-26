@@ -3,8 +3,9 @@
 
 #include <iostream>
 
-Bullet::Bullet(int posX, int posY, sf::Texture& texture)
-: dammages(bulletDammages)
+Bullet::Bullet(unsigned int id_, int posX, int posY, sf::Texture& texture)
+: id(id_)
+, dammages(bulletDammages)
 , absoluteSpeed(bulletSpeed)
 , speed(sf::Vector2f(0, 0))
 , destroyed(false)
@@ -29,6 +30,10 @@ void Bullet::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 
 void Bullet::setSpeed(sf::Vector2f speed_){
 	speed = speed_;
+}
+
+unsigned int Bullet::getId(){
+	return id;
 }
 
 void Bullet::destroy(){

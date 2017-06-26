@@ -4,8 +4,10 @@
 #include <string>
 #include <iostream>
 
-Character::Character(int posX, int posY, sf::Texture& texture, const sf::Font& font)
-: mSprite()
+Character::Character(unsigned int id_, int posX, int posY, 
+	sf::Texture& texture, const sf::Font& font)
+: id(id_)
+, mSprite()
 , speed(speedCharacter)
 , health(healthCharacter)
 , direction(sf::Vector2f(0, 0))
@@ -71,4 +73,8 @@ void Character::takeDammages(int value){
 
 sf::FloatRect Character::getBoundingRect() const{
 	return getTransform().transformRect(mSprite.getGlobalBounds());
+}
+
+unsigned int Character::getId() const{
+	return id;
 }

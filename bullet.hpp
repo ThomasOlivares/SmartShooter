@@ -10,7 +10,8 @@
 class Bullet : public sf::Transformable, public sf::Drawable
 {
 	public :
-						Bullet(int posX, int posY, sf::Texture& texture);
+						Bullet(unsigned int id_, int posX, int posY
+							, sf::Texture& texture);
 		void 			initSprite(sf::Texture& texture);
 		void 			update(sf::Time dt);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -19,8 +20,10 @@ class Bullet : public sf::Transformable, public sf::Drawable
 		void 			setSpeed(sf::Vector2f speed_);
 		int 			getDammages();
 		sf::FloatRect 	getBoundingRect() const;
+		unsigned int 	getId();
 		
 	private :
+		unsigned int 	id;
 		int 			dammages;
 		int 			absoluteSpeed;
 		sf::Vector2f 	speed;

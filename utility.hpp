@@ -3,12 +3,12 @@
 // Pickups
 #define healthCharacter 100
 #define healthValue 	20
-#define maxPickup 		5
+#define maxPickup 		1
 
 // Bullets
 #define bulletDammages 	30
 #define bulletSpeed 	1000
-#define bulletPerSeconds 0.2
+#define bulletPerSeconds 1
 
 //Characters
 #define leftColumn 		100  // Positions of the two character and pickups associated
