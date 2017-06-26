@@ -243,19 +243,35 @@ std::vector<double> World::getImputs1(){
 	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
 
 	// Same for pickup
+	bool found = false;
 	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
-		if (itr->getId() == 0){
+		if (itr->getId() == 0 && !itr->isDestroyed()){
 			result.push_back((2*itr->getPosition().y - dimY)/dimY);
+			found = true;
 		}
+	}
+	if (!found){
+		result.push_back(0);
 	}
 
 	// Same for bullet
+	found = false;
 	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
 		if (itr->getId() == 1){
 			result.push_back((2*itr->getPosition().y - dimY)/dimY);
 			result.push_back((2*itr->getPosition().x - dimX)/dimX);
+			found = true;
 		}
 	}
+	if (!found){
+		/* window is beetween 0 and 1 so 10 is really outside, and 
+			the player shouldn't care about it*/
+		result.push_back(10);
+		result.push_back(10);
+	}
+
+
+	return result;
 }
 
 // return the values which we will give to the right neural network
@@ -268,18 +284,21 @@ std::vector<double> World::getImputs2(){
 	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
 	result.push_back((2*players[0].getPosition().y - dimY)/dimY);
 
-	// Same for pickup
-	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
-		if (itr->getId() == 1){
-			result.push_back((2*itr->getPosition().y - dimY)/dimY);
-		}
-	}
-
 	// Same for bullet
+	bool found = false;
 	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
-		if (itr->getId() == 0){
+		if (itr->getId() == 1 && !itr->isDestroyed()){
 			result.push_back((2*itr->getPosition().y - dimY)/dimY);
 			result.push_back((2*itr->getPosition().x - dimX)/dimX);
+			found = true;
 		}
 	}
+	if (!found){
+		/* window is beetween 0 and 1 so 10 is really outside, and 
+			the player shouldn't care about it*/
+		result.push_back(10);
+		result.push_back(10);
+	}
+
+	return result;
 }

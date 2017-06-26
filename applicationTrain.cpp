@@ -22,7 +22,7 @@ ApplicationTrain::ApplicationTrain(NeuralNetwork& mPlayer1_, NeuralNetwork& mPla
 and give the output to the World class*/
 void ApplicationTrain::handleEvent(){
 	mPlayer1.setImput(mWorld.getImputs1());
-	mPlayer2.setImput(mWorld.getImputs2());
+	mPlayer2.setImput(mWorld.getImputs1());
 	mPlayer1.computeLayers();
 	mPlayer2.computeLayers();
 	std::vector<double> decision1 = mPlayer1.output();
@@ -42,7 +42,7 @@ std::pair<double, double> ApplicationTrain::run()
 	{
 		handleEvent();
 		std::pair<double, double> scores = update(TimePerFrame);
-		if(scores.first != 0 || scores.second != 0){
+		if((int)scores.first != 0 || (int)scores.second != 0){
 			return scores;
 		}
 	}

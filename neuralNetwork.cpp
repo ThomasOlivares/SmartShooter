@@ -75,6 +75,9 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork& p1, NeuralNetwork& p2, double alpha,
 }
 
 double NeuralNetwork::getWeight(int numLayer, int i, int j) const{
+	assert(numLayer < nbLayers);
+	assert(i < weight[numLayer].size());
+	assert(j < weight[numLayer][i].size());
 	return weight[numLayer][i][j];
 }
 
@@ -85,25 +88,25 @@ void NeuralNetwork::setWeight(int numTheta, int i, int j, double modif){
 void NeuralNetwork::initStructure(){
 	for(int i = 0; i<nbLayers; i++){
 		int nbNeurons = neuronPerLayer[i];
-		vector<double> couche;
+		vector<double> layer;
 		for (int j = 0; j<nbNeurons; j++){
-			couche.push_back(0);
+			layer.push_back(0);
 		}
 
 		// We push the constant neuron, except for the output layer
 		if (i != nbLayers - 1){
-			couche.push_back(1); // Constant neuron
+			layer.push_back(1); // Constant neuron
 		}
 		
-		layers.push_back(couche);
+		layers.push_back(layer);
 	}	
 }
 /* Initialisation of the input layer using the data from the game
 */
 void NeuralNetwork::setImput(vector<double> tab){
-	if (tab.size() != layers[0].size()){
+	if (tab.size() != layers[0].size() - 1){ // -1 for constant neuron
 		std::cerr << "size of given imputs(" << tab.size()  <<
-			") doesn't fetch size of neural network(" << layers[0].size() << 
+			") doesn't fetch size of neural network(" << layers[0].size() - 1 << 
 			")" <<std::endl;
 		exit(EXIT_FAILURE);
 	}
@@ -160,15 +163,15 @@ void NeuralNetwork::initWeights(double wValue){
 void NeuralNetwork::initWeights(NeuralNetwork& p1, NeuralNetwork& p2, double alpha, 
 		double mutationPourcent, double mutationMaxValue)
 {
-	for (int numCouche = 0; numCouche < nbLayers - 1; numCouche++){
+	for (int numLayer = 0; numLayer < nbLayers - 1; numLayer++){
 		// Here we have all the weight beetween two layers
 		vector<vector<double> > theta;
-		for(int i = 0; i<neuronPerLayer[numCouche]+1; i++){
+		for(int i = 0; i<neuronPerLayer[numLayer]+1; i++){
 			// Here we have all the weight of the connexions send by one neural
 			vector<double> neuralWeight;
-			for (int j = 0; j < neuronPerLayer[numCouche+1]; j++){
-				double weight = alpha*p1.getWeight(numCouche, i, j)
-							  + (1-alpha)*p2.getWeight(numCouche, i, j);
+			for (int j = 0; j < neuronPerLayer[numLayer+1]; j++){
+				double weight = alpha*p1.getWeight(numLayer, i, j)
+							  + (1-alpha)*p2.getWeight(numLayer, i, j);
 				if ((double)(rand()%1000)/1000.f < mutationPourcent){
 					weight += mutationMaxValue * ((double)(rand()%1000/1000.f) - 
 												  (double)(rand()%1000/1000.f));

@@ -3,7 +3,7 @@
 #include "neuralNetwork.hpp"
 
 // During selection, size of the list of candidates (chosen randomly)
-#define sizeTournament 10
+#define sizeTournament 2
 
 // Poucentage of networks removed after selection
 #define pourcentageElimination 50
@@ -25,6 +25,7 @@ class Train
 
 	private :
 		void 				initPopulation(int n, std::vector<int> neuronsPerLayer);
+		void 				describe() const;
 		void 				play();
 		void 				selection();
 		void 				reproduction();

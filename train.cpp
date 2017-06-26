@@ -1,6 +1,7 @@
 #include "train.hpp"
 #include "applicationTrain.hpp"
 
+#include <cassert>
 #include <random>
 #include <algorithm>
 #include <iostream>
@@ -8,7 +9,8 @@
 #include <string>
 
 Train::Train(int nPopulation_, std::vector<int> neuronsPerLayer_)
-: nPopulation(nPopulation_)
+: networks()
+, nPopulation(nPopulation_)
 , neuronsPerLayer(neuronsPerLayer_)
 {
 	// Initialisation of the randoms values
@@ -16,16 +18,26 @@ Train::Train(int nPopulation_, std::vector<int> neuronsPerLayer_)
 	time(&timev);
 	srand(timev);
 
-	initPopulation(nPopulation_, neuronsPerLayer);
+	initPopulation(nPopulation, neuronsPerLayer);
 }
 
 void Train::initPopulation(int n, std::vector<int> neuronsPerLayer){
 	for (int i = 0; i < n; i++){
 		struct IA ia;
 		ia.network = NeuralNetwork(neuronsPerLayer);
+		assert(ia.network.getNbLayers() == 4);
 		ia.age = 1;
 		ia.score = 0;
 		networks.push_back(ia);
+	}
+}
+
+void Train::describe() const{
+	for (int i = 0; i < nPopulation; i++){
+		std::cout << "ia n°" << i + 1 << std::endl;
+		struct IA ia = networks[i];
+		std::cout << "age : " << ia.age << std::endl;
+		std::cout << "score : " << ia.score << std::endl;
 	}
 }
 
@@ -59,7 +71,7 @@ void Train::play(){
 void Train::selection(){
 	std::sort(networks.begin(), networks.end(), 
 		[&](struct IA n1, struct IA n2){return n1.score > n2.score;});
-
+	/*
 	double score = networks[0].score;
 	double Maxscore = networks[0].score;
 	int count = 0;
@@ -78,6 +90,7 @@ void Train::selection(){
 		}
 	}
 	std::cout << count << " duplicates removed" << std::endl;
+	*/
 	double max = networks.size()*(100.f - pourcentageElimination)/100.f;
 	while(networks.size() > max){
 		networks.pop_back();
@@ -105,21 +118,25 @@ void Train::reproduction(){
 }
 
 int Train::selectParent(int size){
-	int randomsIndexes[sizeTournament];
-	for (int i = 0; i<sizeTournament; i++){
-		randomsIndexes[i] = rand()%(size);
+	int max = rand()%(size);
+	for (int i = 0; i<sizeTournament-1; i++){
+		int randomIndex = rand()%(size);
+		if (networks[randomIndex].score > networks[max].score)
+		{
+			max = randomIndex;
+		}
 	}
-	return maxIndex(randomsIndexes, sizeTournament);
+	return max;
 }
 
 void Train::save(int i){
-	NeuralNetwork& best = networks[0].network;
-	best.setImput(1);
-	best.computeLayers();
-	double value = best.output()[0];
-	std::cout << "ret value : " << value << std::endl;
+	NeuralNetwork& best1 = networks[0].network;
 	std::string name = "Best_with_" + std::to_string(i) + "_iterations.txt";
-	best.save(name);
+	best1.save(name);
+
+	NeuralNetwork& best2 = networks[1].network;
+	name = "Best_with_" + std::to_string(i) + "_iterations_bis.txt";
+	best2.save(name);
 }
 
 int maxIndex(int tab[], int size){
@@ -137,12 +154,11 @@ std::vector<int> getRandomVector(int size){
 	for (int i = 0; i<size; i++){
 		res.push_back(i);
 	}
+	/*
 	std::random_device rd;
     std::mt19937 g(rd());
  
     std::shuffle(res.begin(), res.end(), g);
-    for (int i = 0; i<size; i++){
-		std::cout << res[i];
-	}
-	std::cout << std::endl;
+*/
+    return res;
 }
