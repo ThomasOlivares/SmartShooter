@@ -24,6 +24,13 @@ Application::Application(char* path1, char* path2)
 /* For both players, we give them imput, compute the layers 
 and give the output to the World class*/
 void Application::handleEvent(){
+	sf::Event event;
+    while (mWindow.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed){
+            mWindow.close();
+        }
+    }
 	mPlayer1.setImput(mWorld.getImputs(0));
 	mPlayer2.setImput(mWorld.getImputs(1));
 	mPlayer1.computeLayers();
@@ -75,9 +82,9 @@ void Application::run()
 	}
 
 	if (finalScore.first > 0){
-		std::cout << "left won with " << finalScore.first << " health" << std::endl;
+		std::cout << "left won with " << finalScore.first << " score" << std::endl;
 	}
 	else{
-		std::cout << "right won with " << finalScore.second << " health" << std::endl;
+		std::cout << "right won with " << finalScore.second << " score" << std::endl;
 	}
 }

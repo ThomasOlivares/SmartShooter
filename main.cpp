@@ -11,8 +11,8 @@ int main(int argc, char* argv[])
 	}
 	else if (!strcmp("train", argv[1]) || !strcmp("t", argv[1]))
 	{
-		Train trainHandler(50, {5, 10, 8, 2});
-		trainHandler.run(20);
+		Train trainHandler(100, {5, 10, 8, 2});
+		trainHandler.run(1000);
 	}
 	else if (!strcmp("play", argv[1]) || !strcmp("p", argv[1]))
 	{

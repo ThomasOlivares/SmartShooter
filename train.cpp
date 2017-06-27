@@ -54,11 +54,10 @@ void Train::run(int nIterations){
 
 void Train::play(){
 	std::vector<int> v = getRandomVector(nPopulation);
+	//#pragma omp parallel for private(v) schedule(dynamic)
 	for (int i = 0; i < nPopulation/2; i++){
-		int first = v[v.size() - 1];
-		v.pop_back();
-		int second = v[v.size() - 1];
-		v.pop_back();
+		int first = v[2*i];
+		int second = v[2*i+1];
 		ApplicationTrain app(networks[first].network, networks[second].network);
 		std::pair<double, double> scores = app.run();
 		networks[first].score = scores.first;
