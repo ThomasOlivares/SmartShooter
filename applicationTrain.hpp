@@ -18,7 +18,7 @@ class ApplicationTrain
 
 	private:
 		void 							handleEvent();
-		std::pair<double, double>		update(sf::Time dt);
+		void							update(sf::Time dt);
 
 
 	private:

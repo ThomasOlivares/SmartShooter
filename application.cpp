@@ -12,30 +12,30 @@ using namespace std;
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 
-Application::Application()
+Application::Application(char* path1, char* path2)
 : mWindow(sf::VideoMode(getWindowDimensions().x, getWindowDimensions().y)
 	, "Smart Shooter", sf::Style::Close)
 , mWorld()
-, direction(sf::Vector2f(0, 0))
+, mPlayer1(path1)
+, mPlayer2(path2)
 {
 }
 
+/* For both players, we give them imput, compute the layers 
+and give the output to the World class*/
 void Application::handleEvent(){
-	sf::Event event;
-    while (mWindow.pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed){
-            mWindow.close();
-        }
-        else{
-        	mWorld.handleEvent(event);
-        }
-    }
+	mPlayer1.setImput(mWorld.getImputs(0));
+	mPlayer2.setImput(mWorld.getImputs(1));
+	mPlayer1.computeLayers();
+	mPlayer2.computeLayers();
+	std::vector<double> decision1 = mPlayer1.output();
+	std::vector<double> decision2 = mPlayer2.output();
+	mWorld.handleEvent(decision1, decision2);
 }
 
-int Application::update(sf::Time dt)
+void Application::update(sf::Time dt)
 {
-	return (int)mWorld.update(dt).first;
+	mWorld.update(dt);
 }
 
 void Application::render()
@@ -52,9 +52,10 @@ void Application::run()
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
-	int finalScore = 0;
+	bool finished = false;
+	std::pair<int, int> finalScore(0, 0);
 
-	while (mWindow.isOpen() && finalScore == 0)
+	while (mWindow.isOpen() && !finished)
 	{
 		sf::Time dt = clock.restart();
 		timeSinceLastUpdate += dt;
@@ -63,15 +64,20 @@ void Application::run()
 			timeSinceLastUpdate -= TimePerFrame;
 
 			handleEvent();
-			finalScore = update(TimePerFrame);
+			update(TimePerFrame);
+			if (mWorld.checkGameOver()){
+				finished = true;
+				mWorld.setFinalScores();
+				finalScore = mWorld.getFinalScores();
+			}
 		}
 		render();
 	}
 
-	if (finalScore > 0){
-		std::cout << "left won with " << finalScore << " health" << std::endl;
+	if (finalScore.first > 0){
+		std::cout << "left won with " << finalScore.first << " health" << std::endl;
 	}
 	else{
-		std::cout << "right won with " << -finalScore << " health" << std::endl;
+		std::cout << "right won with " << finalScore.second << " health" << std::endl;
 	}
 }

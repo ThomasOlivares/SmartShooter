@@ -4,6 +4,7 @@
 #define healthCharacter 100
 #define healthValue 	20
 #define maxPickup 		1
+#define pickupBonus     100
 
 // Bullets
 #define bulletDammages 	30
@@ -14,6 +15,9 @@
 #define leftColumn 		100  // Positions of the two character and pickups associated
 #define rightColumn 	500
 #define speedCharacter 	500
+
+//Time
+#define maxTime 		30
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/CircleShape.hpp>

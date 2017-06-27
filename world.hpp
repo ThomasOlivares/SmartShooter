@@ -36,15 +36,16 @@ class World : public sf::Drawable
 		void 			createBullet(Character& player, sf::Texture& texture, 
 							int direction);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		std::pair<double, double> 			update(sf::Time dt);
+		bool 			update(sf::Time dt);
 		void 			checkPlayerOutWindow(Character& player);
 		void 			collectPickups();
 		void 			collisionDetection();
 		void			destroyEntities();
 		void 			addPickups(int max);
-		int 			checkGameOver();
-		std::vector<double> getImputs1();
-		std::vector<double> getImputs2();
+		bool 			checkGameOver();
+		std::pair<int, int> getFinalScores();
+		void 			setFinalScores();
+		std::vector<double> getImputs(int id);
 
 	private :
 		std::map<Texture, sf::Texture>			textures;
@@ -52,4 +53,5 @@ class World : public sf::Drawable
 		std::vector<Character> 					players;
 		std::vector<Pickup> 					pickups;
 		std::vector<Bullet> 					bullets;
+		sf::Time 								mTime;
 };

@@ -10,6 +10,7 @@ Character::Character(unsigned int id_, int posX, int posY,
 , mSprite()
 , speed(speedCharacter)
 , health(healthCharacter)
+, score(0)
 , direction(sf::Vector2f(0, 0))
 , healthDisplay()
 , cooldown(sf::seconds(0))
@@ -65,6 +66,14 @@ int Character::getHealth(){
 
 void Character::addHealth(int value){
 	health += value;
+}
+
+int Character::getScore(){
+	return score;
+}
+
+void Character::addScore(int score_){
+	score+=score_;
 }
 
 void Character::takeDammages(int value){

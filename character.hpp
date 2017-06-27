@@ -19,6 +19,8 @@ class Character : public sf::Transformable, public sf::Drawable
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		void 			setDirection(sf::Vector2f direction_);
 		int 			getHealth();
+		int 			getScore();
+		void 			addScore(int score_);
 		void 			update(sf::Time dt);
 		void 			addHealth(int value);
 		void 			takeDammages(int value);
@@ -29,6 +31,7 @@ class Character : public sf::Transformable, public sf::Drawable
 	private :
 		unsigned int 	id;
 		int 			health;
+		int 			score;
 		float 			speed;
 		sf::Sprite 		mSprite;
 		sf::Texture 	texture;

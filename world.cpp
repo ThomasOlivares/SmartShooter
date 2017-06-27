@@ -1,11 +1,13 @@
 #include "world.hpp"
 #include "utility.hpp"
 
+#include <cassert>
 #include <iostream>
 #include <time.h>
 
 World::World()
 : textures()
+, mTime(sf::seconds(0))
 {
 	srand(time(NULL)); //initialize the random values
 	initTextures();
@@ -75,7 +77,7 @@ void World::handleEvent(sf::Event& event){
 
 void World::handleEvent(std::vector<double> decision1, std::vector<double> decision2){
 	// Player1
-    players[0].setDirection(sf::Vector2f(0, decision1[0]));
+    players[0].setDirection(sf::Vector2f(0, 2*decision1[0] - 1));
     // We shoot with the probability decision[1]
     double shoot = (double)(rand()%10000)/10000.f;
     if (shoot < decision1[1]){
@@ -83,14 +85,15 @@ void World::handleEvent(std::vector<double> decision1, std::vector<double> decis
     }
 
     // Player2
-    players[1].setDirection(sf::Vector2f(0, decision2[0]));
+    players[1].setDirection(sf::Vector2f(0, 2*decision2[0] - 1));
     shoot = (double)(rand()%10000)/10000.f;
     if (shoot < decision2[1]){
     	createBullet(players[1], textures[BulletT], -1);
     }
 }
 
-std::pair<double, double> World::update(sf::Time dt){
+bool World::update(sf::Time dt){
+	mTime +=dt;
 	for (auto itr = players.begin(); itr != players.end(); itr++){
 		itr->update(dt);
 		checkPlayerOutWindow(*itr);
@@ -102,11 +105,6 @@ std::pair<double, double> World::update(sf::Time dt){
 	collisionDetection();
 	destroyEntities();
 	addPickups(maxPickup);
-
-	double finalScore = checkGameOver();
-	if (finalScore != 0){
-		return std::pair<double, double>(finalScore, -finalScore);
-	}
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
@@ -135,13 +133,17 @@ void World::createBullet(Character& player, sf::Texture& texture, int direction)
 /* If the player wants to go outside the window, we keep it inside
 Later we could use a return value to train the neural network*/
 void World::checkPlayerOutWindow(Character& player){
-	int y = player.getBoundingRect().top;
+	int y = player.getBoundingRect().top + player.getBoundingRect().height/2;
 	int height = player.getBoundingRect().height;
 	if (y < 0){
+		player.addScore(y);
+		assert(y<0);
 		player.setPosition(player.getPosition().x, 0);
 	}
-	else if (y + height > getWindowDimensions().y){
-		player.setPosition(player.getPosition().x, getWindowDimensions().y - height);
+	else if (y > getWindowDimensions().y){
+		player.addScore(getWindowDimensions().y - y);
+		assert((getWindowDimensions().y - y)<0);
+		player.setPosition(player.getPosition().x, getWindowDimensions().y);
 	}
 }
 
@@ -154,6 +156,7 @@ void World::collectPickups(){
 			sf::FloatRect pickupRect = itr->getBoundingRect();
 			if (rect.intersects(pickupRect)){
 				player->addHealth(itr->getHealth());
+				player->addScore(pickupBonus);
 				itr->destroy();
 			}
 		}
@@ -222,30 +225,42 @@ void World::addPickups(int max){
 
 /* return a number corresponding to the health of the winner
 positive value means left player won, negative means right player won*/
-int World::checkGameOver(){
+bool World::checkGameOver(){
 	if (players[0].getHealth() <= 0){
-		return -players[1].getHealth();
+		return true;
 	}
 	else if (players[1].getHealth() <= 0){
-		return players[0].getHealth();
+		return true;
 	}
-	return 0;
+	else if(mTime.asSeconds() > maxTime){
+		return true;
+	}
+	return false;
+}
+
+std::pair<int, int> World::getFinalScores(){
+	return std::pair<int, int>(players[0].getScore() ,players[1].getScore());
+}
+
+void World::setFinalScores(){
+	players[0].addScore(players[0].getHealth() - players[1].getHealth());
+	players[1].addScore(players[1].getHealth() - players[0].getHealth());
 }
 
 // return the values which we will give to the left neural network
-std::vector<double> World::getImputs1(){
+std::vector<double> World::getImputs(int id){
 	std::vector<double> result;
-	double dimX = getWindowDimensions().y;
+	double dimX = getWindowDimensions().x;
 	double dimY = getWindowDimensions().y;
 
 	// We transform the players positions into a value beetween -1 and 1
-	result.push_back((2*players[0].getPosition().y - dimY)/dimY);
-	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
+	result.push_back((2*players[id].getPosition().y - dimY)/dimY);
+	result.push_back((2*players[1-id].getPosition().y - dimY)/dimY);
 
 	// Same for pickup
 	bool found = false;
 	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
-		if (itr->getId() == 0 && !itr->isDestroyed()){
+		if (itr->getId() == id && !itr->isDestroyed()){
 			result.push_back((2*itr->getPosition().y - dimY)/dimY);
 			found = true;
 		}
@@ -257,9 +272,15 @@ std::vector<double> World::getImputs1(){
 	// Same for bullet
 	found = false;
 	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
-		if (itr->getId() == 1){
+		if (itr->getId() == 1-id){
 			result.push_back((2*itr->getPosition().y - dimY)/dimY);
-			result.push_back((2*itr->getPosition().x - dimX)/dimX);
+			double position = (2*itr->getPosition().x - dimX)/dimX;
+			if (id == 0){
+				result.push_back(position);
+			}
+			else{
+				result.push_back(-position);
+			}
 			found = true;
 		}
 	}
@@ -270,35 +291,6 @@ std::vector<double> World::getImputs1(){
 		result.push_back(10);
 	}
 
-
-	return result;
-}
-
-// return the values which we will give to the right neural network
-std::vector<double> World::getImputs2(){
-	std::vector<double> result;
-	double dimX = getWindowDimensions().y;
-	double dimY = getWindowDimensions().y;
-
-	// We transform the players positions into a value beetween -1 and 1
-	result.push_back((2*players[1].getPosition().y - dimY)/dimY);
-	result.push_back((2*players[0].getPosition().y - dimY)/dimY);
-
-	// Same for bullet
-	bool found = false;
-	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
-		if (itr->getId() == 1 && !itr->isDestroyed()){
-			result.push_back((2*itr->getPosition().y - dimY)/dimY);
-			result.push_back((2*itr->getPosition().x - dimX)/dimX);
-			found = true;
-		}
-	}
-	if (!found){
-		/* window is beetween 0 and 1 so 10 is really outside, and 
-			the player shouldn't care about it*/
-		result.push_back(10);
-		result.push_back(10);
-	}
 
 	return result;
 }

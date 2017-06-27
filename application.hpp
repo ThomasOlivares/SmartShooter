@@ -1,6 +1,7 @@
 #pragma once
 
 #include "world.hpp"
+#include "neuralNetwork.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -9,13 +10,13 @@
 class Application
 {
 	public:
-								Application();
+								Application(char* path1, char* path2);
 		void					run();
 		
 
 	private:
 		void 					handleEvent();
-		int					update(sf::Time dt);
+		void						update(sf::Time dt);
 		void					render();
 
 
@@ -23,6 +24,7 @@ class Application
 		static const sf::Time	TimePerFrame;
 
 		sf::RenderWindow		mWindow;
-		sf::Vector2f 			direction;
+		NeuralNetwork  			mPlayer1;
+		NeuralNetwork  			mPlayer2;
 		World 					mWorld;
 };

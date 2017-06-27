@@ -21,8 +21,8 @@ ApplicationTrain::ApplicationTrain(NeuralNetwork& mPlayer1_, NeuralNetwork& mPla
 /* For both players, we give them imput, compute the layers 
 and give the output to the World class*/
 void ApplicationTrain::handleEvent(){
-	mPlayer1.setImput(mWorld.getImputs1());
-	mPlayer2.setImput(mWorld.getImputs1());
+	mPlayer1.setImput(mWorld.getImputs(0));
+	mPlayer2.setImput(mWorld.getImputs(1));
 	mPlayer1.computeLayers();
 	mPlayer2.computeLayers();
 	std::vector<double> decision1 = mPlayer1.output();
@@ -30,10 +30,9 @@ void ApplicationTrain::handleEvent(){
 	mWorld.handleEvent(decision1, decision2);
 }
 
-std::pair<double, double> ApplicationTrain::update(sf::Time dt)
+void ApplicationTrain::update(sf::Time dt)
 {
-	std::pair<double, double> scores = mWorld.update(dt);
-	return scores;
+	mWorld.update(dt);
 }
 
 std::pair<double, double> ApplicationTrain::run()
@@ -41,9 +40,10 @@ std::pair<double, double> ApplicationTrain::run()
 	while (true)
 	{
 		handleEvent();
-		std::pair<double, double> scores = update(TimePerFrame);
-		if((int)scores.first != 0 || (int)scores.second != 0){
-			return scores;
+		update(TimePerFrame);
+		if (mWorld.checkGameOver()){
+			mWorld.setFinalScores();
+			return mWorld.getFinalScores();
 		}
 	}
 }
