@@ -4,9 +4,10 @@ FLAG=-lsfml-graphics \
 
 CLASSES=application.o \
 		applicationTrain.o \
-		bullet.o \
 		character.o \
+		laser.o \
 		main.o \
+		networkWindow.o \
 		neuralNetwork.o \
 		pickup.o \
 		train.o \
@@ -15,7 +16,7 @@ CLASSES=application.o \
 
 COMPILER=g++
 
-LDFLAGS=-O3
+LDFLAGS=-O3 -fopenmp 
 
 RDFLAGS=-std=c++11
 
@@ -30,14 +31,17 @@ application.o : application.cpp application.hpp
 applicationTrain.o : applicationTrain.cpp applicationTrain.hpp
 	$(COMPILER) $(LDFLAGS) -c applicationTrain.cpp $(RDFLAGS)
 
-bullet.o : bullet.cpp bullet.hpp
-	$(COMPILER) $(LDFLAGS) -c bullet.cpp $(RDFLAGS)
-
 character.o : character.cpp character.hpp
 	$(COMPILER) $(LDFLAGS) -c character.cpp $(RDFLAGS)
 
+laser.o : laser.cpp laser.hpp
+	$(COMPILER) $(LDFLAGS) -c laser.cpp $(RDFLAGS)
+
 main.o : main.cpp
 	$(COMPILER) $(LDFLAGS) -c main.cpp $(RDFLAGS)
+
+networkWindow.o : networkWindow.cpp networkWindow.hpp
+	$(COMPILER) $(LDFLAGS) -c networkWindow.cpp $(RDFLAGS)
 
 neuralNetwork.o : neuralNetwork.cpp neuralNetwork.hpp
 	$(COMPILER) $(LDFLAGS) -c neuralNetwork.cpp $(RDFLAGS)

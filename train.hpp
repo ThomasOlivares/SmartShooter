@@ -2,15 +2,6 @@
 
 #include "neuralNetwork.hpp"
 
-// During selection, size of the list of candidates (chosen randomly)
-#define sizeTournament 2
-
-// Poucentage of networks removed after selection
-#define pourcentageElimination 50
-
-#define mutationPerCent 10.f
-#define mutationValue 1
-
 struct IA{
 	NeuralNetwork network;
 	double score;

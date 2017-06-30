@@ -3,6 +3,7 @@
 #include "character.hpp"
 #include "pickup.hpp"
 #include "bullet.hpp"
+#include "laser.hpp"
 
 #include <map>
 
@@ -35,6 +36,7 @@ class World : public sf::Drawable
 							std::vector<double> decision2);
 		void 			createBullet(Character& player, sf::Texture& texture, 
 							int direction);
+		void 			orientLaser(Character& player, double value);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		bool 			update(sf::Time dt);
 		void 			checkPlayerOutWindow(Character& player);
@@ -52,6 +54,6 @@ class World : public sf::Drawable
 		sf::Font 								mFont;
 		std::vector<Character> 					players;
 		std::vector<Pickup> 					pickups;
-		std::vector<Bullet> 					bullets;
+		std::vector<Laser>  					lasers;
 		sf::Time 								mTime;
 };

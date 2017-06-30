@@ -235,6 +235,10 @@ int NeuralNetwork::getNbNeurons(int num) const{
 	return neuronPerLayer[num];
 }
 
+int NeuralNetwork::getNeuronValue(int layer, int neuron) const{
+	return layers[layer][neuron];
+}
+
 void NeuralNetwork::save(string name){
 	FILE* f = fopen(name.c_str(), "w");
 	fwrite(&nbLayers, sizeof(int), 1, f);

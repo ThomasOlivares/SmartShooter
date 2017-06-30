@@ -28,6 +28,7 @@ class NeuralNetwork{
 		void 				printWeight() const;
 		int 				getNbLayers() const;
 		int 				getNbNeurons(int num) const;
+		int 				getNeuronValue(int layer, int neuron) const;
 		void 				save(std::string name);
 
 	protected :

@@ -18,6 +18,7 @@ class Character : public sf::Transformable, public sf::Drawable
 		void 			initText(const sf::Font& font);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		void 			setDirection(sf::Vector2f direction_);
+		void 			setLaserDirection(float laserDir_);
 		int 			getHealth();
 		int 			getScore();
 		void 			addScore(int score_);
@@ -33,6 +34,8 @@ class Character : public sf::Transformable, public sf::Drawable
 		int 			health;
 		int 			score;
 		float 			speed;
+		float 			laserAngle;
+		float 			laserDir;
 		sf::Sprite 		mSprite;
 		sf::Texture 	texture;
 		sf::Vector2f 	direction;

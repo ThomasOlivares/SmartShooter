@@ -20,6 +20,8 @@ void World::initPlayers(){
 		textures[PlayerT], mFont));
 	players.push_back(Character(1, rightColumn, getWindowDimensions().y/2, 
 		textures[PlayerT], mFont));
+	lasers.push_back(Laser(0, players[0].getPosition()));
+	lasers.push_back(Laser(1, players[1].getPosition()));
 }
 
 void World::initTextures(){
@@ -47,6 +49,7 @@ void World::load(Texture name, char* pathname){
 	textures.insert(std::pair<Texture, sf::Texture>(name, texture));
 }
 
+/*
 void World::handleEvent(sf::Event& event){
 	// Player1
     sf::Vector2f direction = sf::Vector2f(0, 0);
@@ -74,22 +77,16 @@ void World::handleEvent(sf::Event& event){
         createBullet(players[1], textures[BulletT], -1);
     }
 }
+*/
 
 void World::handleEvent(std::vector<double> decision1, std::vector<double> decision2){
 	// Player1
     players[0].setDirection(sf::Vector2f(0, 2*decision1[0] - 1));
-    // We shoot with the probability decision[1]
-    double shoot = (double)(rand()%10000)/10000.f;
-    if (shoot < decision1[1]){
-    	createBullet(players[0], textures[BulletT], 1);
-    }
+    orientLaser(players[0], decision1[1]);
 
     // Player2
     players[1].setDirection(sf::Vector2f(0, 2*decision2[0] - 1));
-    shoot = (double)(rand()%10000)/10000.f;
-    if (shoot < decision2[1]){
-    	createBullet(players[1], textures[BulletT], -1);
-    }
+    orientLaser(players[1], decision2[1]);
 }
 
 bool World::update(sf::Time dt){
@@ -97,8 +94,9 @@ bool World::update(sf::Time dt){
 	for (auto itr = players.begin(); itr != players.end(); itr++){
 		itr->update(dt);
 		checkPlayerOutWindow(*itr);
+		lasers[itr->getId()].setPosition(itr->getPosition());
 	}
-	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+	for (auto itr = lasers.begin(); itr != lasers.end(); itr++){
 		itr->update(dt);
 	}
 	collectPickups();
@@ -114,20 +112,14 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){
 		itr->draw(target, states);
 	}
-	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
+	for (auto itr = lasers.begin(); itr != lasers.end(); itr++){
 		itr->draw(target, states);
 	}
 }
 
-void World::createBullet(Character& player, sf::Texture& texture, int direction){
-	if (player.canShoot()){
-		sf::FloatRect rect = player.getBoundingRect();
-		float x = rect.left + rect.width/2;
-		float y = rect.top + rect.height/2;
-		Bullet bullet = Bullet(player.getId(), x, y, texture);
-		bullet.setSpeed(sf::Vector2f(direction, 0));
-		bullets.push_back(bullet);
-	}
+void World::orientLaser(Character& player, double value){
+	unsigned int id = player.getId();
+	lasers[id].changeOrientation(2*value-1);
 }
 
 /* If the player wants to go outside the window, we keep it inside
@@ -166,11 +158,11 @@ void World::collectPickups(){
 void World::collisionDetection(){
 	for (auto player = players.begin(); player != players.end(); player++){
 		sf::FloatRect rect = player->getBoundingRect();
-		for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
-			sf::FloatRect bulletRect = itr->getBoundingRect();
-			if (rect.intersects(bulletRect)){
+		for (auto itr = lasers.begin(); itr != lasers.end(); itr++){
+			sf::FloatRect laserRect = itr->getBoundingRect();
+			if (rect.intersects(laserRect) && player->getId() != itr->getId()){
 				player->takeDammages(itr->getDammages());
-				itr->destroy();
+				players[1-player->getId()].addScore(bulletBonus);
 			}
 		}
 	}
@@ -181,17 +173,6 @@ void World::destroyEntities(){
 	for (auto itr = pickups.begin(); itr != pickups.end();){
 		if (itr->isDestroyed()){
 			itr = pickups.erase(itr);
-		}
-		else{
-			itr++;
-		}
-	}
-	for (auto itr = bullets.begin(); itr != bullets.end();){
-		if (itr->isDestroyed()){
-			itr = bullets.erase(itr);
-		}
-		else if (itr->getPosition().x < 0 || itr->getPosition().x > getWindowDimensions().x){
-			itr = bullets.erase(itr);
 		}
 		else{
 			itr++;
@@ -268,29 +249,6 @@ std::vector<double> World::getImputs(int id){
 	if (!found){
 		result.push_back(0);
 	}
-
-	// Same for bullet
-	found = false;
-	for (auto itr = bullets.begin(); itr != bullets.end(); itr++){
-		if (itr->getId() == 1-id){
-			result.push_back((2*itr->getPosition().y - dimY)/dimY);
-			double position = (2*itr->getPosition().x - dimX)/dimX;
-			if (id == 0){
-				result.push_back(position);
-			}
-			else{
-				result.push_back(-position);
-			}
-			found = true;
-		}
-	}
-	if (!found){
-		/* window is beetween 0 and 1 so 10 is really outside, and 
-			the player shouldn't care about it*/
-		result.push_back(10);
-		result.push_back(10);
-	}
-
 
 	return result;
 }

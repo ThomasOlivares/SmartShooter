@@ -1,5 +1,6 @@
-#include "application.hpp"
+	#include "application.hpp"
 #include "train.hpp"
+#include "utility.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -11,8 +12,8 @@ int main(int argc, char* argv[])
 	}
 	else if (!strcmp("train", argv[1]) || !strcmp("t", argv[1]))
 	{
-		Train trainHandler(100, {5, 10, 8, 2});
-		trainHandler.run(1000);
+		Train trainHandler(sizePopulation, {3, 10, 8, 2});
+		trainHandler.run(nbIterations);
 	}
 	else if (!strcmp("play", argv[1]) || !strcmp("p", argv[1]))
 	{

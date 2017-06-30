@@ -9,6 +9,7 @@ Character::Character(unsigned int id_, int posX, int posY,
 : id(id_)
 , mSprite()
 , speed(speedCharacter)
+, laserAngle(0)
 , health(healthCharacter)
 , score(0)
 , direction(sf::Vector2f(0, 0))
@@ -58,6 +59,10 @@ bool Character::canShoot(){
 
 void Character::setDirection(sf::Vector2f direction_){
 	direction = direction_;
+}
+
+void Character::setLaserDirection(float laserDir_){
+	laserDir = laserDir_;
 }
 
 int Character::getHealth(){

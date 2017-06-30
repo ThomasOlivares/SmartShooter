@@ -1,5 +1,6 @@
 #include "train.hpp"
 #include "applicationTrain.hpp"
+#include "utility.hpp"
 
 #include <cassert>
 #include <random>
@@ -70,38 +71,18 @@ void Train::play(){
 void Train::selection(){
 	std::sort(networks.begin(), networks.end(), 
 		[&](struct IA n1, struct IA n2){return n1.score > n2.score;});
-	/*
-	double score = networks[0].score;
-	double Maxscore = networks[0].score;
-	int count = 0;
-	for (auto itr = ++networks.begin(); itr != networks.end(); ){
-		if (score == itr->score){
-			itr = networks.erase(itr);
-			count++;
-		}
-		else if(itr->score > Maxscore ){
-			std::cout << "sorting failed" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		else{
-			score = itr->score;
-			itr++;
-		}
-	}
-	std::cout << count << " duplicates removed" << std::endl;
-	*/
 	double max = networks.size()*(100.f - pourcentageElimination)/100.f;
 	while(networks.size() > max){
 		networks.pop_back();
 	}
-	std::cout << "new size : " << networks.size() << std::endl;
 	std::cout << "Best result : " << networks[0].score << std::endl;
 	std::cout << "Worst result : " << networks[networks.size()-1].score << std::endl;
 }
 
 void Train::reproduction(){
 	int size = networks.size();
-	for(int i = networks.size(); i < nPopulation; i++){
+	//#pragma omp parallel for private(size) schedule(dynamic)
+	for(int i = size; i < nPopulation; i++){
 		int p1 = selectParent(size);
 		int p2 = selectParent(size);
 		NeuralNetwork& n1 = networks[p1].network;
@@ -130,11 +111,11 @@ int Train::selectParent(int size){
 
 void Train::save(int i){
 	NeuralNetwork& best1 = networks[0].network;
-	std::string name = "Best_with_" + std::to_string(i) + "_iterations.txt";
+	std::string name = std::to_string(i) + ".txt";
 	best1.save(name);
 
 	NeuralNetwork& best2 = networks[1].network;
-	name = "Best_with_" + std::to_string(i) + "_iterations_bis.txt";
+	name = std::to_string(i) + "_bis.txt";
 	best2.save(name);
 }
 
