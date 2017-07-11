@@ -16,7 +16,7 @@ class Train
 
 	private :
 		void 				initPopulation(int n, std::vector<int> neuronsPerLayer);
-		void 				describe() const;
+		void 				describe(int index) const;
 		void 				play();
 		void 				selection();
 		void 				reproduction();

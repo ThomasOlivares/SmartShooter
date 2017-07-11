@@ -1,40 +1,41 @@
 #pragma once
 
 // General
-#define sizePopulation  100
-#define nbIterations    1000
+#define sizePopulation   100
+#define nbIterations     300
+
+// Score
+#define maxScore         40
 
 // Pickups
-#define healthValue 	20
-#define maxPickup 		1
-#define pickupBonus     20 // Bonus score
-
-// Bullets
-#define bulletDammages 	30
-#define bulletSpeed 	1000
-#define bulletPerSeconds 1
-#define bulletBonus     0 // Bonus score
+#define healthValue 	 20
+#define maxPickup 		 1
+#define pickupBonus      100 // Bonus score
+#define pickupCoefficient 0
 
 // Lasers
-#define laserSpeed      2  // angular speed
-#define laserDammages   1
-#define laserThickness  2
-#define laserLength     800
-#define color1 			sf::Color::Red
-#define color2 			sf::Color::Blue
+#define laserSpeed       2  // angular speed
+#define laserDammages    0
+#define laserBonus       0
+#define laserAngleCoefficient 0
+
+#define color1 			 sf::Color::Red
+#define color2 			 sf::Color::Blue
+#define laserLength      800
+#define laserThickness   2
 
 
 //Characters
-#define healthCharacter 100
-#define leftColumn 		100  // Positions of the two character and pickups associated
-#define rightColumn 	500
-#define speedCharacter 	500
+#define healthCharacter  100
+#define leftColumn 		 100  // Positions of the two character and pickups associated
+#define rightColumn 	 500
+#define speedCharacter 	 500
 
 //Time
-#define maxTime 		30
+#define maxTime 		 30
 
 // During selection, size of the list of candidates (chosen randomly)
-#define sizeTournament 5
+#define sizeTournament   5
 
 // Poucentage of networks removed after selection
 #define pourcentageElimination 50

@@ -17,22 +17,23 @@ class Character : public sf::Transformable, public sf::Drawable
 		void 			initSprite(sf::Texture& texture);
 		void 			initText(const sf::Font& font);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		sf::Vector2f 			getDirection();
 		void 			setDirection(sf::Vector2f direction_);
 		void 			setLaserDirection(float laserDir_);
-		int 			getHealth();
-		int 			getScore();
-		void 			addScore(int score_);
+		double 			getHealth();
+		double 			getScore();
+		void 			setScore(double score_);
+		void 			addScore(double score_);
 		void 			update(sf::Time dt);
-		void 			addHealth(int value);
-		void 			takeDammages(int value);
-		bool 			canShoot();
+		void 			addHealth(double value);
+		void 			takeDammages(double value);
 		sf::FloatRect 	getBoundingRect() const;
 		unsigned int 	getId() const;
 		
 	private :
 		unsigned int 	id;
-		int 			health;
-		int 			score;
+		double 			health;
+		double 			score;
 		float 			speed;
 		float 			laserAngle;
 		float 			laserDir;
@@ -41,6 +42,4 @@ class Character : public sf::Transformable, public sf::Drawable
 		sf::Vector2f 	direction;
 		sf::Text  		healthDisplay;
 		sf::Font 		mFont;
-		sf::Time 		cooldown;
-		const sf::Time 	fireRate;
 };

@@ -99,8 +99,10 @@ bool World::update(sf::Time dt){
 	for (auto itr = lasers.begin(); itr != lasers.end(); itr++){
 		itr->update(dt);
 	}
+	addScoreLaser();
+	addScorePickup();
 	collectPickups();
-	collisionDetection();
+	collisionDetection(dt);
 	destroyEntities();
 	addPickups(maxPickup);
 }
@@ -120,6 +122,10 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 void World::orientLaser(Character& player, double value){
 	unsigned int id = player.getId();
 	lasers[id].changeOrientation(2*value-1);
+	double angle = lasers[id].getRotation();
+	if (angle < 90 || angle > 270){
+		player.addScore(-1);
+	}
 }
 
 /* If the player wants to go outside the window, we keep it inside
@@ -139,6 +145,71 @@ void World::checkPlayerOutWindow(Character& player){
 	}
 }
 
+void World::addScoreLaser(){
+	// player left
+	double perfectAngle = getPerfectAngle(players[0], players[1]);
+	double angle = lasers[0].getRotation();
+	double dir = lasers[0].getDirection();
+	if ((perfectAngle-angle)*dir > 0){
+		players[0].addScore(laserAngleCoefficient*abs(dir));
+	}
+
+	// player right
+	perfectAngle = getPerfectAngle(players[1], players[0]);
+	angle = lasers[1].getRotation();
+	dir = lasers[1].getDirection();
+	if ((perfectAngle-angle)*dir > 0){
+		players[1].addScore(laserAngleCoefficient*abs(dir));
+	}
+}
+/*
+void World::addScorePickup(){
+	for (auto itr = pickups.begin(); itr < pickups.end(); itr++){
+		if (itr->getId() == 0){
+			double pickupPosition = itr->getPosition().y;
+			double playerPosition = players[0].getPosition().y;
+			double bonus = pickupConstant-abs(pickupPosition-playerPosition);
+			players[0].addScore(pickupCoefficient*bonus);
+		}
+		else{
+			double pickupPosition = itr->getPosition().y;
+			double playerPosition = players[1].getPosition().y;
+			double bonus = pickupConstant-abs(pickupPosition-playerPosition);
+			players[1].addScore(pickupCoefficient*bonus);
+		}
+	}
+}
+*/
+void World::addScorePickup(){
+	for (auto itr = pickups.begin(); itr < pickups.end(); itr++){
+		if (itr->getId() == 0){
+			double pickupPosition = itr->getPosition().y;
+			double playerPosition = players[0].getPosition().y;
+			double diff = pickupPosition - playerPosition;
+			double dir = players[0].getDirection().y;
+			if (dir * diff > 0){
+				players[0].addScore(pickupCoefficient*abs(dir));
+			}
+			else{
+				players[0].addScore(-pickupCoefficient*abs(dir));
+			}
+			
+		}
+		else{
+			double pickupPosition = itr->getPosition().y;
+			double playerPosition = players[1].getPosition().y;
+			double diff = pickupPosition - playerPosition;
+			double dir = players[1].getDirection().y;
+			if (dir * diff > 0){
+				players[1].addScore(pickupCoefficient*abs(dir));
+			}
+			else{
+				players[1].addScore(-pickupCoefficient*abs(dir));
+			}
+		}
+	}
+}
+
 /* If a player collide a pickup, his health is augmented by the healthValue 
 of the pickup and the pickup is destroyed*/
 void World::collectPickups(){
@@ -155,17 +226,38 @@ void World::collectPickups(){
 	}
 }
 
-void World::collisionDetection(){
+void World::collisionDetection(sf::Time dt){
 	for (auto player = players.begin(); player != players.end(); player++){
 		sf::FloatRect rect = player->getBoundingRect();
 		for (auto itr = lasers.begin(); itr != lasers.end(); itr++){
 			sf::FloatRect laserRect = itr->getBoundingRect();
-			if (rect.intersects(laserRect) && player->getId() != itr->getId()){
-				player->takeDammages(itr->getDammages());
-				players[1-player->getId()].addScore(bulletBonus);
+			int y = getLaserHeight(player->getPosition().x, *itr);
+			sf::Vector2f impactPoint = sf::Vector2f(player->getPosition().x, y);
+			if (rect.contains(impactPoint) 
+					&& rect.intersects(laserRect) 
+					&& player->getId() != itr->getId())
+			{
+				player->takeDammages(itr->getDammages(dt));
+				players[1-player->getId()].addScore(laserBonus);
 			}
 		}
 	}
+}
+
+// get the point where the laser touch the other player axis
+int World::getLaserHeight(int x, Laser laser) const{
+	int x1 = laser.getPosition().x;
+	int y1 = laser.getPosition().y;
+	int x2 = x;
+	double alpha = laser.getRotation();
+	double beta = 180 - alpha;
+	return y1 + abs(x2-x1)*tan(beta*3.14/180.f);
+}
+
+float World::getPerfectAngle(Character shooter, Character target){
+	int deltaX = abs(shooter.getPosition().x - target.getPosition().x);
+	int deltaY = shooter.getPosition().y - target.getPosition().y;
+	return 180.0 + 180.0/3.14159*atan((double)deltaY/(double)deltaX);
 }
 
 // Destroy the entities marked to be destroyed
@@ -224,6 +316,22 @@ std::pair<int, int> World::getFinalScores(){
 }
 
 void World::setFinalScores(){
+	/*
+	if (players[0].getHealth() == 0){
+		players[0].addScore(-maxScore);
+		players[1].addScore(maxScore);
+	}
+	else if (players[1].getHealth() == 0){
+		players[0].addScore(maxScore);
+		players[1].addScore(-maxScore);
+	}
+	else{
+		players[0].addScore(players[0].getHealth() - players[1].getHealth());
+		players[1].addScore(players[1].getHealth() - players[0].getHealth());
+	}
+	players[0].setScore(players[0].getScore()/mTime.asSeconds());
+	players[1].setScore(players[1].getScore()/mTime.asSeconds());
+	*/
 	players[0].addScore(players[0].getHealth() - players[1].getHealth());
 	players[1].addScore(players[1].getHealth() - players[0].getHealth());
 }
@@ -235,9 +343,21 @@ std::vector<double> World::getImputs(int id){
 	double dimY = getWindowDimensions().y;
 
 	// We transform the players positions into a value beetween -1 and 1
-	result.push_back((2*players[id].getPosition().y - dimY)/dimY);
-	result.push_back((2*players[1-id].getPosition().y - dimY)/dimY);
+	result.push_back(-(2*players[id].getPosition().y - dimY)/dimY);
+	result.push_back(-(2*players[1-id].getPosition().y - dimY)/dimY);
 
+	if (id == 0){
+		double angle = 180 - lasers[id].getRotation();
+		if (angle < 0){
+			angle += 360;
+		}
+		result.push_back(angle/360.0);
+	}
+	else{
+		double angle = lasers[id].getRotation();
+		result.push_back(angle/360.0);
+	}
+	
 	// Same for pickup
 	bool found = false;
 	for (auto itr = pickups.begin(); itr != pickups.end(); itr++){

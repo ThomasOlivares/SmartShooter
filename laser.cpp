@@ -32,11 +32,38 @@ void Laser::initSprite(){
 }
 
 void Laser::update(sf::Time dt){
-	rotate(angularSpeed*direction);
+	if (id == 0){
+		rotate(-angularSpeed*direction);
+	}
+	else{
+		rotate(angularSpeed*direction);
+	}
 }
 
-int Laser::getDammages() const{
-	return dammages;
+void Laser::rotate(double degree){
+	if (id==1){
+		sf::Transformable::rotate(degree);
+	}
+	else{
+		sf::Transformable::rotate(-degree);
+	}
+}
+
+double Laser::getRotation() const{
+	if (id==1){
+		return sf::Transformable::getRotation();
+	}
+	else{
+		return 180 - sf::Transformable::getRotation();
+	}
+}
+
+double Laser::getDirection() const{
+	return direction;
+}
+
+double Laser::getDammages(sf::Time dt) const{
+	return dammages*dt.asSeconds();
 }
 
 void Laser::changeOrientation(double value){

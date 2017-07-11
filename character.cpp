@@ -14,8 +14,6 @@ Character::Character(unsigned int id_, int posX, int posY,
 , score(0)
 , direction(sf::Vector2f(0, 0))
 , healthDisplay()
-, cooldown(sf::seconds(0))
-, fireRate(sf::seconds(bulletPerSeconds))
 {
 	setPosition(posX, posY);
 	initSprite(texture);
@@ -46,15 +44,10 @@ void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const{
 void Character::update(sf::Time dt){
 	move(direction*speed*dt.asSeconds());
 	healthDisplay.setString(std::to_string(health));
-	cooldown += dt;
 }
 
-bool Character::canShoot(){
-	if(cooldown > fireRate){
-		cooldown = sf::seconds(0);
-		return true;
-	}
-	return false;
+sf::Vector2f Character::getDirection(){
+	return direction;
 }
 
 void Character::setDirection(sf::Vector2f direction_){
@@ -65,23 +58,26 @@ void Character::setLaserDirection(float laserDir_){
 	laserDir = laserDir_;
 }
 
-int Character::getHealth(){
+double Character::getHealth(){
 	return health;
 }
 
-void Character::addHealth(int value){
+void Character::addHealth(double value){
 	health += value;
 }
 
-int Character::getScore(){
+double Character::getScore(){
 	return score;
 }
+void Character::setScore(double score_){
+	score =score_;
+}
 
-void Character::addScore(int score_){
+void Character::addScore(double score_){
 	score+=score_;
 }
 
-void Character::takeDammages(int value){
+void Character::takeDammages(double value){
 	health -= value;
 }
 

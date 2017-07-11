@@ -40,8 +40,12 @@ class World : public sf::Drawable
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		bool 			update(sf::Time dt);
 		void 			checkPlayerOutWindow(Character& player);
+		void 			addScoreLaser();
+		void 			addScorePickup();
 		void 			collectPickups();
-		void 			collisionDetection();
+		void 			collisionDetection(sf::Time dt);
+		int 			getLaserHeight(int x, Laser laser) const;
+		float 			getPerfectAngle(Character shooter, Character target);
 		void			destroyEntities();
 		void 			addPickups(int max);
 		bool 			checkGameOver();

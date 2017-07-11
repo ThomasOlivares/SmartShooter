@@ -26,20 +26,17 @@ void Train::initPopulation(int n, std::vector<int> neuronsPerLayer){
 	for (int i = 0; i < n; i++){
 		struct IA ia;
 		ia.network = NeuralNetwork(neuronsPerLayer);
-		assert(ia.network.getNbLayers() == 4);
 		ia.age = 1;
 		ia.score = 0;
 		networks.push_back(ia);
 	}
 }
 
-void Train::describe() const{
-	for (int i = 0; i < nPopulation; i++){
-		std::cout << "ia n°" << i + 1 << std::endl;
-		struct IA ia = networks[i];
-		std::cout << "age : " << ia.age << std::endl;
-		std::cout << "score : " << ia.score << std::endl;
-	}
+void Train::describe(int index) const{
+	std::cout << "ia n°" << index + 1 << std::endl;
+	struct IA ia = networks[index];
+	std::cout << "age : " << ia.age << std::endl;
+	std::cout << "score : " << ia.score << std::endl;
 }
 
 void Train::run(int nIterations){
@@ -71,12 +68,13 @@ void Train::play(){
 void Train::selection(){
 	std::sort(networks.begin(), networks.end(), 
 		[&](struct IA n1, struct IA n2){return n1.score > n2.score;});
+	std::cout << "Best result : " << networks[0].score << std::endl;
+	std::cout << "Worst result : " << networks[networks.size()-1].score << std::endl;
 	double max = networks.size()*(100.f - pourcentageElimination)/100.f;
 	while(networks.size() > max){
 		networks.pop_back();
 	}
-	std::cout << "Best result : " << networks[0].score << std::endl;
-	std::cout << "Worst result : " << networks[networks.size()-1].score << std::endl;
+	std::cout << "Worst selected result : " << networks[networks.size()-1].score << std::endl;
 }
 
 void Train::reproduction(){
@@ -111,10 +109,12 @@ int Train::selectParent(int size){
 
 void Train::save(int i){
 	NeuralNetwork& best1 = networks[0].network;
+	describe(0);
 	std::string name = std::to_string(i) + ".txt";
 	best1.save(name);
 
 	NeuralNetwork& best2 = networks[1].network;
+	describe(1);
 	name = std::to_string(i) + "_bis.txt";
 	best2.save(name);
 }

@@ -15,9 +15,12 @@ class Laser : public sf::Transformable, public sf::Drawable
 		void 			initSprite();
 		void 			update(sf::Time dt);
 		virtual void 	draw(sf::RenderTarget& target, sf::RenderStates states) const;
-		int 			getDammages() const;
+		double 			getDammages(sf::Time dt) const;
+		double 			getDirection() const;
 		sf::FloatRect 	getBoundingRect() const;
 		unsigned int 	getId();
+		void 			rotate(double degree);
+		double 			getRotation() const;
 		void 			changeOrientation(double value);
 		
 	private :

@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	}
 	else if (!strcmp("train", argv[1]) || !strcmp("t", argv[1]))
 	{
-		Train trainHandler(sizePopulation, {3, 10, 8, 2});
+		Train trainHandler(sizePopulation, {4, 10, 8, 2});
 		trainHandler.run(nbIterations);
 	}
 	else if (!strcmp("play", argv[1]) || !strcmp("p", argv[1]))
