@@ -76,8 +76,8 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork& p1, NeuralNetwork& p2, double alpha,
 
 double NeuralNetwork::getWeight(int numLayer, int i, int j) const{
 	assert(numLayer < nbLayers);
-	assert(i < weight[numLayer].size());
-	assert(j < weight[numLayer][i].size());
+	assert(i < weight[numLayer].size()+1);
+	assert(j < weight[numLayer][i].size()+1);
 	return weight[numLayer][i][j];
 }
 
@@ -235,7 +235,7 @@ int NeuralNetwork::getNbNeurons(int num) const{
 	return neuronPerLayer[num];
 }
 
-int NeuralNetwork::getNeuronValue(int layer, int neuron) const{
+double NeuralNetwork::getNeuronValue(int layer, int neuron) const{
 	return layers[layer][neuron];
 }
 

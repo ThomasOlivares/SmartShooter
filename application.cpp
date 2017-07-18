@@ -15,9 +15,12 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f/60.f);
 Application::Application(char* path1, char* path2)
 : mWindow(sf::VideoMode(getWindowDimensions().x, getWindowDimensions().y)
 	, "Smart Shooter", sf::Style::Close)
-, mWorld()
+, mWindowNetwork(sf::VideoMode(getNetworkWindowDimensions().x, getNetworkWindowDimensions().y)
+	, "Smart Shooter", sf::Style::Close)
 , mPlayer1(path1)
 , mPlayer2(path2)
+, networkWindow(mPlayer1)
+, mWorld()
 {
 }
 
@@ -29,6 +32,13 @@ void Application::handleEvent(){
     {
         if (event.type == sf::Event::Closed){
             mWindow.close();
+        }
+    }
+    
+    while (mWindowNetwork.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed){
+            mWindowNetwork.close();
         }
     }
 	mPlayer1.setImput(mWorld.getImputs(0));
@@ -43,6 +53,7 @@ void Application::handleEvent(){
 void Application::update(sf::Time dt)
 {
 	mWorld.update(dt);
+	networkWindow.update();
 }
 
 void Application::render()
@@ -52,6 +63,13 @@ void Application::render()
 	mWorld.draw(mWindow, sf::RenderStates::Default);
 
 	mWindow.display();
+
+
+	mWindowNetwork.clear(sf::Color(255, 255, 255));
+
+	networkWindow.draw(mWindowNetwork, sf::RenderStates::Default);
+
+	mWindowNetwork.display();
 }
 
 void Application::run()
@@ -61,6 +79,8 @@ void Application::run()
 
 	bool finished = false;
 	std::pair<int, int> finalScore(0, 0);
+	std::pair<std::vector<double>, std::vector<double> > 
+		finalDetailScore({0, 0, 0, 0}, {0, 0, 0, 0});
 
 	while (mWindow.isOpen() && !finished)
 	{
@@ -69,22 +89,32 @@ void Application::run()
 		while (timeSinceLastUpdate > TimePerFrame)
 		{
 			timeSinceLastUpdate -= TimePerFrame;
-
 			handleEvent();
 			update(TimePerFrame);
 			if (mWorld.checkGameOver()){
 				finished = true;
 				mWorld.setFinalScores();
 				finalScore = mWorld.getFinalScores();
+				finalDetailScore = mWorld.getDetailScores();
 			}
 		}
 		render();
 	}
 
-	if (finalScore.first > 0){
-		std::cout << "left won with " << finalScore.first << " score" << std::endl;
-	}
-	else{
-		std::cout << "right won with " << finalScore.second << " score" << std::endl;
-	}
+	std::cout << "left : \n" << "pickups : " << finalDetailScore.first[0]
+							<< "\npickupsDir : " << finalDetailScore.first[1]
+							<< "\nlaser : " << finalDetailScore.first[2]
+							<< "\nlaserDir" << finalDetailScore.first[3]
+							<< "\nfinal : " << finalDetailScore.first[4]
+							<< "\nnegatives : " << finalDetailScore.first[5] 
+							<< "\ntotal : " << finalScore.first <<  std::endl;
+
+	std::cout << "right : \n" << "pickups : " << finalDetailScore.second[0]
+							<< "\npickupsDir : " << finalDetailScore.second[1]
+							<< "\nlaser : " << finalDetailScore.second[2]
+							<< "\nlaserDir" << finalDetailScore.second[3]
+							<< "\nfinal : " << finalDetailScore.second[4]
+							<< "\nnegatives : " << finalDetailScore.second[5] 
+							<< "\ntotal : " << finalScore.second <<  std::endl;
+
 }

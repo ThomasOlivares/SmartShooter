@@ -22,8 +22,10 @@ class Character : public sf::Transformable, public sf::Drawable
 		void 			setLaserDirection(float laserDir_);
 		double 			getHealth();
 		double 			getScore();
-		void 			setScore(double score_);
-		void 			addScore(double score_);
+		double 			getScore(int i);
+		std::vector<double> getScoreVector();
+		void 			setScore(double score_, int where);
+		void 			addScore(double score_, int where);
 		void 			update(sf::Time dt);
 		void 			addHealth(double value);
 		void 			takeDammages(double value);
@@ -33,7 +35,7 @@ class Character : public sf::Transformable, public sf::Drawable
 	private :
 		unsigned int 	id;
 		double 			health;
-		double 			score;
+		std::vector<double> scores;
 		float 			speed;
 		float 			laserAngle;
 		float 			laserDir;

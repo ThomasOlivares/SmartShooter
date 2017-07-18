@@ -2,6 +2,7 @@
 
 #include "world.hpp"
 #include "neuralNetwork.hpp"
+#include "networkWindow.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -24,7 +25,9 @@ class Application
 		static const sf::Time	TimePerFrame;
 
 		sf::RenderWindow		mWindow;
+		sf::RenderWindow		mWindowNetwork;
 		NeuralNetwork  			mPlayer1;
 		NeuralNetwork  			mPlayer2;
+		NetworkWindow 			networkWindow;
 		World 					mWorld;
 };

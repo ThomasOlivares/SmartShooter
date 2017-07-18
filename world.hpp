@@ -50,6 +50,7 @@ class World : public sf::Drawable
 		void 			addPickups(int max);
 		bool 			checkGameOver();
 		std::pair<int, int> getFinalScores();
+		std::pair<std::vector<double>, std::vector<double> > getDetailScores();
 		void 			setFinalScores();
 		std::vector<double> getImputs(int id);
 

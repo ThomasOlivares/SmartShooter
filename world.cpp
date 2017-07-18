@@ -124,7 +124,7 @@ void World::orientLaser(Character& player, double value){
 	lasers[id].changeOrientation(2*value-1);
 	double angle = lasers[id].getRotation();
 	if (angle < 90 || angle > 270){
-		player.addScore(-1);
+		player.addScore(-1, 5);
 	}
 }
 
@@ -134,12 +134,12 @@ void World::checkPlayerOutWindow(Character& player){
 	int y = player.getBoundingRect().top + player.getBoundingRect().height/2;
 	int height = player.getBoundingRect().height;
 	if (y < 0){
-		player.addScore(y);
+		player.addScore(y, 5);
 		assert(y<0);
 		player.setPosition(player.getPosition().x, 0);
 	}
 	else if (y > getWindowDimensions().y){
-		player.addScore(getWindowDimensions().y - y);
+		player.addScore(getWindowDimensions().y - y, 5);
 		assert((getWindowDimensions().y - y)<0);
 		player.setPosition(player.getPosition().x, getWindowDimensions().y);
 	}
@@ -151,7 +151,7 @@ void World::addScoreLaser(){
 	double angle = lasers[0].getRotation();
 	double dir = lasers[0].getDirection();
 	if ((perfectAngle-angle)*dir > 0){
-		players[0].addScore(laserAngleCoefficient*abs(dir));
+		players[0].addScore(laserAngleCoefficient*fabs(dir), 3);
 	}
 
 	// player right
@@ -159,7 +159,7 @@ void World::addScoreLaser(){
 	angle = lasers[1].getRotation();
 	dir = lasers[1].getDirection();
 	if ((perfectAngle-angle)*dir > 0){
-		players[1].addScore(laserAngleCoefficient*abs(dir));
+		players[1].addScore(laserAngleCoefficient*fabs(dir), 3);
 	}
 }
 /*
@@ -188,10 +188,10 @@ void World::addScorePickup(){
 			double diff = pickupPosition - playerPosition;
 			double dir = players[0].getDirection().y;
 			if (dir * diff > 0){
-				players[0].addScore(pickupCoefficient*abs(dir));
+				players[0].addScore(pickupCoefficient*abs(dir), 1);
 			}
 			else{
-				players[0].addScore(-pickupCoefficient*abs(dir));
+				players[0].addScore(-pickupCoefficient*abs(dir), 1);
 			}
 			
 		}
@@ -201,10 +201,10 @@ void World::addScorePickup(){
 			double diff = pickupPosition - playerPosition;
 			double dir = players[1].getDirection().y;
 			if (dir * diff > 0){
-				players[1].addScore(pickupCoefficient*abs(dir));
+				players[1].addScore(pickupCoefficient*abs(dir), 1);
 			}
 			else{
-				players[1].addScore(-pickupCoefficient*abs(dir));
+				players[1].addScore(-pickupCoefficient*abs(dir), 1);
 			}
 		}
 	}
@@ -219,7 +219,7 @@ void World::collectPickups(){
 			sf::FloatRect pickupRect = itr->getBoundingRect();
 			if (rect.intersects(pickupRect)){
 				player->addHealth(itr->getHealth());
-				player->addScore(pickupBonus);
+				player->addScore(pickupBonus, 0);
 				itr->destroy();
 			}
 		}
@@ -238,7 +238,7 @@ void World::collisionDetection(sf::Time dt){
 					&& player->getId() != itr->getId())
 			{
 				player->takeDammages(itr->getDammages(dt));
-				players[1-player->getId()].addScore(laserBonus);
+				players[1-player->getId()].addScore(laserBonus, 2);
 			}
 		}
 	}
@@ -315,6 +315,12 @@ std::pair<int, int> World::getFinalScores(){
 	return std::pair<int, int>(players[0].getScore() ,players[1].getScore());
 }
 
+std::pair<std::vector<double>, std::vector<double> > World::getDetailScores(){
+	return std::pair<std::vector<double>, std::vector<double> >
+		(players[0].getScoreVector() ,players[1].getScoreVector());
+}
+
+
 void World::setFinalScores(){
 	/*
 	if (players[0].getHealth() == 0){
@@ -332,8 +338,8 @@ void World::setFinalScores(){
 	players[0].setScore(players[0].getScore()/mTime.asSeconds());
 	players[1].setScore(players[1].getScore()/mTime.asSeconds());
 	*/
-	players[0].addScore(players[0].getHealth() - players[1].getHealth());
-	players[1].addScore(players[1].getHealth() - players[0].getHealth());
+	players[0].addScore(players[0].getHealth() - players[1].getHealth(), 4);
+	players[1].addScore(players[1].getHealth() - players[0].getHealth(), 4);
 }
 
 // return the values which we will give to the left neural network

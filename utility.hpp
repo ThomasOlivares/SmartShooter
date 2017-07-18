@@ -2,7 +2,7 @@
 
 // General
 #define sizePopulation   100
-#define nbIterations     300
+#define nbIterations     2000
 
 // Score
 #define maxScore         40
@@ -10,14 +10,14 @@
 // Pickups
 #define healthValue 	 20
 #define maxPickup 		 1
-#define pickupBonus      100 // Bonus score
+#define pickupBonus      40 // Bonus score
 #define pickupCoefficient 0
 
 // Lasers
-#define laserSpeed       2  // angular speed
-#define laserDammages    0
-#define laserBonus       0
-#define laserAngleCoefficient 0
+#define laserSpeed       5  // angular speed
+#define laserDammages    10
+#define laserBonus       2
+#define laserAngleCoefficient 0.01
 
 #define color1 			 sf::Color::Red
 #define color2 			 sf::Color::Blue

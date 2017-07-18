@@ -1,24 +1,29 @@
 #include "networkWindow.hpp"
 #include "utility.hpp"
 
+#include <iostream>
 #include <math.h>
 
 NetworkWindow::NetworkWindow(NeuralNetwork& network_)
 : network(network_)
 {
 	initNeurons();
+	initWeights();
 }
 
 void NetworkWindow::initNeurons(){
 	int nbLayers = network.getNbLayers();
-	int spaceX = (nbLayers + 2) / getNetworkWindowDimensions().x;
+	double spaceX = (double)getNetworkWindowDimensions().x / (double)(nbLayers + 2);
 	for (int numLayer = 0; numLayer < nbLayers; numLayer++){
 		std::vector<sf::CircleShape> layer;
-		int nbNeurons = network.getNbNeurons(numLayer);
-		int spaceY = (nbNeurons + 2) / getNetworkWindowDimensions().y;
+		int nbNeurons = network.getNbNeurons(numLayer)+1;
+		if (numLayer == nbLayers-1){
+			nbNeurons--;
+		}
+		double spaceY = (double)getNetworkWindowDimensions().y / (double)(nbNeurons + 2);
 		for (int numNeuron = 0; numNeuron < nbNeurons; numNeuron++){
 			sf::CircleShape neuron(10);
-			neuron.setFillColor(sf::Color::White);
+			neuron.setFillColor(sf::Color::Black);
 			neuron.setPosition((numLayer+1)*spaceX, (numNeuron+1)*spaceY);
 			layer.push_back(neuron);
 		}
@@ -33,23 +38,25 @@ void NetworkWindow::initWeights(){
 		std::vector<std::vector<sf::RectangleShape> > temp;
 		for (int neuronSource = 0; neuronSource < nbNeuronsSource; neuronSource++){
 			int nbNeuronsSink = layers[numLayer+1].size();
-			// We don't compute the constant neuron
-			if (numLayer!= nbLayers - 2){
-				nbNeuronsSink--;
-			}
 			std::vector<sf::RectangleShape> temp2;
-			for (int neuronSink = 0; neuronSink < nbNeuronsSource; neuronSink++){
+			for (int neuronSink = 0; neuronSink < nbNeuronsSink; neuronSink++){
 				sf::Vector2f source = layers[numLayer][neuronSource].getPosition();
 				sf::Vector2f sink = layers[numLayer+1][neuronSink].getPosition();
 				float dist = distance(source, sink);
-				sf::RectangleShape line(sf::Vector2f(dist, 5));
+				sf::RectangleShape line(sf::Vector2f(dist, 1));
 				line.setPosition(source);
-				double angle = atan2(sink.y - source.y, sink.x - source.x);
+
+				double value  = 255.0 - std::min(255.0, 50.0*(double)fabs(network.getWeight(numLayer, 
+					neuronSource, neuronSink)));
+				line.setFillColor(sf::Color(value, value, value));
+
+				double angle = 180.0/3.14159*atan2(sink.y - source.y, sink.x - source.x);
 				line.rotate(angle);
 				temp2.push_back(line);
 			}
 			temp.push_back(temp2);
 		}
+		
 		weights.push_back(temp);
 	}
 }
@@ -57,15 +64,18 @@ void NetworkWindow::initWeights(){
 void NetworkWindow::update(){
 	int nbLayers = network.getNbLayers();
 	for (int numLayer = 0; numLayer < nbLayers; numLayer++){
-		int nbNeurons = network.getNbNeurons(numLayer);
+		int nbNeurons = network.getNbNeurons(numLayer)+1;
+		if(numLayer == nbLayers-1){
+			nbNeurons--;
+		}
 		for (int numNeuron = 0; numNeuron < nbNeurons; numNeuron++){
 			sf::CircleShape& neuron = layers[numLayer][numNeuron];
 			double value  = network.getNeuronValue(numLayer, numNeuron);
-			if (value > 0){
-				neuron.setFillColor(sf::Color((int)value, 0, 0));
+			if (value > 0.5){
+				neuron.setFillColor(sf::Color((int)(511.0*(value-0.5)), 0, 0));
 			}
 			else{
-				neuron.setFillColor(sf::Color(0, (int)(-value), 0));
+				neuron.setFillColor(sf::Color(0, (int)(511.0*(0.5-value)), 0));
 			}
 		}
 	}

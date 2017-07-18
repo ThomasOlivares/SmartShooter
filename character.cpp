@@ -11,10 +11,12 @@ Character::Character(unsigned int id_, int posX, int posY,
 , speed(speedCharacter)
 , laserAngle(0)
 , health(healthCharacter)
-, score(0)
 , direction(sf::Vector2f(0, 0))
 , healthDisplay()
 {
+	for (int i = 0; i<6; i++){
+		scores.push_back(0);
+	}
 	setPosition(posX, posY);
 	initSprite(texture);
 	initText(font);
@@ -67,14 +69,27 @@ void Character::addHealth(double value){
 }
 
 double Character::getScore(){
-	return score;
-}
-void Character::setScore(double score_){
-	score =score_;
+	double finalScore = 0;
+	for (auto itr = scores.begin(); itr!=scores.end(); ++itr){
+		finalScore += *itr;
+	}
+	return finalScore;
 }
 
-void Character::addScore(double score_){
-	score+=score_;
+double Character::getScore(int i){
+	return scores[i];
+}
+
+std::vector<double> Character::getScoreVector(){
+	return scores;
+}
+
+void Character::setScore(double score_, int where){
+	scores[where] = score_;
+}
+
+void Character::addScore(double score_, int where){
+	scores[where]+=score_;
 }
 
 void Character::takeDammages(double value){

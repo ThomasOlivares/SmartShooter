@@ -12,10 +12,10 @@ Laser::Laser(unsigned int id_, sf::Vector2f position)
 	initSprite();
 	setOrigin(sf::Vector2f(0, laserThickness/2));
 	if (id == 0){
-		rotate(0);
+		rotate(30);
 	}
 	else{
-		rotate(180);
+		rotate(210);
 	}
 	
 }
@@ -54,8 +54,13 @@ double Laser::getRotation() const{
 		return sf::Transformable::getRotation();
 	}
 	else{
-		return 180 - sf::Transformable::getRotation();
+		double angle = 180 - sf::Transformable::getRotation();
+		if (angle < 0){
+			angle += 360;
+		}
+		return angle;
 	}
+
 }
 
 double Laser::getDirection() const{

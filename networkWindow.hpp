@@ -22,7 +22,7 @@ class NetworkWindow : public sf::Drawable
 		void 				initWeights();
 
 	private :
-		NeuralNetwork 												network;
+		NeuralNetwork& 												network;
 		std::vector<std::vector<sf::CircleShape> >  				layers;
 		std::vector<std::vector<std::vector<sf::RectangleShape> > > weights;
 };

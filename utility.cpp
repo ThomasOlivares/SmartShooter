@@ -36,7 +36,7 @@ sf::Vector2i getWindowDimensions(){
 }
 
 sf::Vector2i getNetworkWindowDimensions(){
-	return sf::Vector2i(400, 400);
+	return sf::Vector2i(600, 600);
 }
 
 float length(sf::Vector2f vector)

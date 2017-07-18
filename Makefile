@@ -16,7 +16,7 @@ CLASSES=application.o \
 
 COMPILER=g++
 
-LDFLAGS=-O3 -fopenmp 
+LDFLAGS=-O3
 
 RDFLAGS=-std=c++11
 

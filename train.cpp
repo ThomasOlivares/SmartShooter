@@ -134,11 +134,11 @@ std::vector<int> getRandomVector(int size){
 	for (int i = 0; i<size; i++){
 		res.push_back(i);
 	}
-	/*
+	
 	std::random_device rd;
     std::mt19937 g(rd());
  
     std::shuffle(res.begin(), res.end(), g);
-*/
+
     return res;
 }
